@@ -1,5 +1,6 @@
 from requests import Session
 from html2text import HTML2Text
+from bs4 import BeautifulSoup
 
 
 class Response:
@@ -82,11 +83,39 @@ class H2TExtractor(Extractor):
         self._response._text = text
         return self._response
 
+class BS4Extractor(Extractor):
+    """docstring for BS4Extractor"""
+    def __init__(self):
+        super().__init__()
+
+    def _requestPage(self, url):
+        sess = Session()
+        headers = {'User-Agent': 'Mozilla/5.0'}
+        res = sess.request(method="GET", url=url, headers=headers)
+        return res.status_code, res.text
+
+    def _texttobs4(self, text):
+        soup = BeautifulSoup(text,"html.parser")
+        body = soup.find("body")
+        p = body.find_all("p",text=True)
+        text = []
+        for node in p:
+            text.append(node.find_all(text=True))
+        text = self.decode(text)
+        return text
+
+    def extractFromURL(self,url):
+        status, html = self._requestPage(url)
+        text = self._texttobs4(html)
+        self._response._status = status
+        self._response._text = text
+        return self._response
+
 
 def main():
     # usage of H2TExtractor
     url = "https://stackoverflow.com/questions/19199984/sort-a-list-in-python"
-    extractor = H2TExtractor()
+    extractor = BS4Extractor()
     res = extractor.extractFromURL(url)
     print(res.get("text"))
 
