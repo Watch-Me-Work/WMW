@@ -1,9 +1,9 @@
  {
   "manifest_version": 2,
-  "name": "SummarLight",
-  "version": "0.7.5",
+  "name": "Watch Me Work",
+  "version": "0.1",
   "permissions": ["activeTab", "YOUR_GOOGLE_CLOUD_FUNCTION_URL"],
-  "description": "Highlights the most important parts of posts/stories/articles!",
+  "description": "A Chrome Extension for Real-time Automatic Searching",
   "icons": {"16": "icon16.png",
             "48": "icon48.png",
             "128": "icon128.png" },

@@ -1,8 +1,14 @@
 body {
-	width: 200px; 
+  width: 100%;
 	overflow:hidden;
 }
 
+#main-container {
+  width: 35em; 
+  text-align: center;
+  padding-top: 5%;
+}
+/*
 button {
      background:none!important;
      color:inherit;
@@ -11,7 +17,7 @@ button {
      padding: 0;
      margin: 0;
      cursor: pointer;
-}
+}*/
 
 ul {
   list-style-type: none;
