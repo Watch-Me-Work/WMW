@@ -101,7 +101,6 @@ class BS4Extractor(Extractor):
         text = []
         for node in p:
             text.append(node.find_all(text=True))
-        text = self.decode(text)
         return text
 
     def extractFromURL(self,url):
