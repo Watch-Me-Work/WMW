@@ -1,4 +1,4 @@
-alert("Generating summary highlights. This may take up to 30 seconds depending on length of article.");
+const fetch = require("node-fetch");
 
 function unicodeToChar(text) {
 	return text.replace(/\\u[\dA-F]{4}/gi, 
@@ -8,10 +8,12 @@ function unicodeToChar(text) {
 }
 
 // capture all text
-var textToSend = document.body.innerText;
+//var textToSend = document.body.innerText;
+
+var textToSend = {"document_html": "Penguins (order Sphenisciformes, family Spheniscidae) are a group of aquatic flightless birds. They live almost exclusively in the Southern Hemisphere, with only one species, the Galápagos penguin, found north of the equator. Highly adapted for life in the water, penguins have countershaded dark and white plumage and flippers for swimming. Most penguins feed on krill, fish, squid and other forms of sea life which they catch while swimming underwater. They spend roughly half of their lives on land and the other half in the sea."};
 
 // summarize and send back
-const api_url = 'YOUR_GOOGLE_CLOUD_FUNCTION_URL';
+const api_url = 'http://localhost:3380';
 
 fetch(api_url, {
   method: 'POST',
@@ -19,17 +21,9 @@ fetch(api_url, {
   headers:{
     'Content-Type': 'application/json'
   } })
-.then(data => { return data.json() })
+.then(data => { 
+	return data.json() })
 .then(res => { 
-	$.each(res, function( index, value ) {
-		value = unicodeToChar(value).replace(/\\n/g, '');
-		document.body.innerHTML = document.body.innerHTML.split(value).join('<span style="background-color: #fff799;">' + value + '</span>');
-	});
+	console.log(res)
  })
 .catch(error => console.error('Error:', error));
-
-
-
-
-
-
