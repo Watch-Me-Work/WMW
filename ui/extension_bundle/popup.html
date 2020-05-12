@@ -3,7 +3,7 @@
 
 <head>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js" integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI" crossorigin="anonymous"></script>
+    <script href="bootstrap.js"></script>
     <link rel="stylesheet" href="styles.css">
     <head>
         <title>Watch Me Work</title>
@@ -14,20 +14,18 @@
     <div class="container" id="main-container">
         <div class="row">
             <div class="col">
-                    <h4 class="card-title">Watch Me Work Options</h4>
-                    <h6 class="card-subtitle mb-2 text-muted">Use these options to configure WMW to your liking.</h6>
-                    <div class="card-body">
-                        <a><button id="clickme" type="button" class="btn btn-primary btn-lg btn-block">Test Button</button></a>
-                        <script type="text/javascript" src="popup.js" charset="utf-8"></script>
+                <h4 class="title">Watch Me Work</h4>
+                <h6 class="mb-2 text-muted">Use these options to configure WMW to your liking.</h6>
+                <div class="card-body">
+                    <div class="custom-control custom-switch" id="toggle-switch">
+                        <input type="checkbox" class="custom-control-input" id="automaticToggleSwitch">
+                        <label class="custom-control-label" for="automaticToggleSwitch">Automatic Search</label>
                     </div>
+                    <a><button id="clickme" type="button" class="btn btn-primary btn-lg btn-block">Begin Searching</button></a>
+                    <script type="text/javascript" src="popup.js" charset="utf-8"></script>
                 </div>
+            </div>
         </div>
-        <!--         <ul>
-            <li>
-                <a><button id="clickme" class="dropbtn">Highlight Summary</button></a>
-                <script type="text/javascript" src="popup.js" charset="utf-8"></script>
-            </li>
-        </ul> -->
     </div>
 </body>
 
