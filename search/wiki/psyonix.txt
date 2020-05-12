@@ -1,0 +1,19 @@
+Psyonix LLC is an American video game developer based in San Diego. Founded in 2000 by Dave Hagewood, the company is best known for its 2015 game Rocket League. In May 2019, Psyonix was acquired by Epic Games.
+
+Psyonix was founded in 2000 by Dave Hagewood, after Hagewood had previously developed Internet and multimedia software. Its first game project was Proteus, which was canceled. In December 2009, Psyonix and its entire team moved from Raleigh, North Carolina, to new offices located close to the Gaslamp Quarter in San Diego.
+
+The company released Supersonic Acrobatic Rocket-Powered Battle-Cars and Monster Madness: Grave Danger in 2008, and continued on other projects including contract work for several big-budget titles. The company then worked on Battle-Cars' successor, Rocket League, which became a commercial success for the company, grossing over US$70 million as of April 2016. The success of Rocket League caused the company to adjust its business models, whereby the company would focus on developing their own original games instead of accepting more contract work.
+
+Psyonix announced in May 2019 that they had been acquired by Epic Games. Psyonix had already had a working relationship with Epic from their work on Unreal Tournament games, and anticipated the move would help them to better support Rocket League esports competitions.
+
+Games developed
+Year Title Platform(s) Publisher(s)
+Canceled Proteus N/A N/A
+Vampire Hunter: The Dark Prophecy N/A N/A
+Nosgoth	Microsoft Windows Square Enix
+2008 Monster Madness: Grave Danger PlayStation 3 SouthPeak Games
+Supersonic Acrobatic Rocket-Powered Battle-Cars	PlayStation 3 Psyonix
+2009 Whizzle Microsoft Windows
+2012 ARC Squadron iOS
+2013 ARC Squadron: Redux Android, iOS
+2015 Rocket League Linux, macOS, Microsoft Windows, Nintendo Switch, PlayStation 4, Xbox One
