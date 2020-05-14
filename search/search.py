@@ -30,9 +30,17 @@ class BingSearchEngine:
             raise ex
 
 
+class DummySearchEngine:
+    def __init__(self):
+        pass
+
+    def search_by_string(self, query_string):
+        titles_const = ['Southern Hemisphere - Wikipedia', 'The Differences Between Northern & Southern Hemisphere ...', 'Geography of the Southern Hemisphere and Facts', 'Which Countries Are in the Southern Hemisphere ...', 'Countries Located Completely in the Southern Hemisphere ...', "A Beginner's Guide to the Southern Hemisphere Sky - Sky ...", 'Are we prepared for COVID-19 hitting the southern hemisphere?', 'Southern Hemisphere | Definition of Southern Hemisphere by ...', 'Southern hemisphere | Definition of Southern hemisphere at ...', 'Southern Constellations – Constellation Guide'] 
+        return [FoundDocument(title) for title in titles_const]
+
 
 class CorpusSearchEngine:
-    def __init__(self, vectorize_fn):
+    def __init__(self, vectorize_fn='lsi'):
         self._vectorize_fn = vectorize_fn
         self._corpus = self.corpus_loader()
         self._corpuslist = ['psyonix', 'codwarzone', 'lastofus', 'larianstudios']

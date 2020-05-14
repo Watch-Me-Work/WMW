@@ -1,4 +1,4 @@
-from .search import BingSearchEngine, DummySearchEngine
+from .search import BingSearchEngine, DummySearchEngine, CorpusSearchEngine
 from .keyword_extraction import get_keywords_by_ner
 
 class RelatedDocumentFinder:
@@ -21,3 +21,10 @@ class DummyRelatedDocumentFinder(RelatedDocumentFinder):
 
     def search(self, document):
         return self._engine.search_by_string("")
+
+class CorpusRelatedDocumentFinder(RelatedDocumentFinder):
+    def __init__(self):
+        self._engine = CorpusSearchEngine()
+
+    def search(self, document):
+        return self._engine.search_by_string(document.get('text'))
