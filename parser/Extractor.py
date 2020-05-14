@@ -57,31 +57,43 @@ class Extractor:
         '''
         pass
 
+    def extractFromHTML(self, html):
+        ''' Public interface for extracting text from given html string
+        '''
+        pass
 
-class H2TExtractor(Extractor):
-    ''' Example html2text implementation of Extractor
-    '''
 
-    def __init__(self):
-        super().__init__()
+# class H2TExtractor(Extractor):
+#     ''' Example html2text implementation of Extractor
+#     '''
 
-    def _requestPage(self, url):
-        sess = Session()
-        headers = {'User-Agent': 'Mozilla/5.0'}
-        res = sess.request(method="GET", url=url, headers=headers)
-        return res.status_code, res.text
+#     def __init__(self):
+#         super().__init__()
 
-    def _htmlToText(self, html):
-        text_maker = HTML2Text()
-        text = text_maker.handle(html)
-        return text
+#     def _requestPage(self, url):
+#         sess = Session()
+#         headers = {'User-Agent': 'Mozilla/5.0'}
+#         res = sess.request(method="GET", url=url, headers=headers)
+#         return res.status_code, res.text
 
-    def extractFromURL(self, url):
-        status, html = self._requestPage(url)
-        text = self._htmlToText(html)
-        self._response._status = status
-        self._response._text = text
-        return self._response
+#     def _htmlToText(self, html):
+#         text_maker = HTML2Text()
+#         text = text_maker.handle(html)
+#         return text
+
+#     def extractFromURL(self, url):
+#         status, html = self._requestPage(url)
+#         text = self._htmlToText(html)
+#         self._response._status = status
+#         self._response._text = text
+#         return self._response
+
+#     def extractFromHTML(self, html):
+#         text = self._htmlToText(html)
+#         self._response._status = status
+#         self._response._text = text
+#         return self._response
+
 
 class BS4Extractor(Extractor):
     """docstring for BS4Extractor"""
@@ -98,24 +110,34 @@ class BS4Extractor(Extractor):
         soup = BeautifulSoup(text,"html.parser")
         body = soup.find("body")
         p = body.find_all("p",text=True)
-        text = []
+        text = ""
         for node in p:
-            text.append(node.find_all(text=True))
+            text += str(node.find_all(text=True))
         return text
 
-    def extractFromURL(self,url):
+    def extractFromURL(self, url):
         status, html = self._requestPage(url)
         text = self._texttobs4(html)
         self._response._status = status
         self._response._text = text
         return self._response
 
+    def extractFromHTML(self, html):
+        text = self._texttobs4(html)
+        self._response._text = text
+        return self._response
+
 
 def main():
-    # usage of H2TExtractor
-    url = "https://stackoverflow.com/questions/19199984/sort-a-list-in-python"
+    # usage of example extractor
+    url = "https://www.foxnews.com/politics/grenell-declassifies-names-of-obama-officials-who-unmasked-flynn-report-says"
+
+    sess = Session()
+    headers = {'User-Agent': 'Mozilla/5.0'}
+    res = sess.request(method="GET", url=url, headers=headers)
+    
     extractor = BS4Extractor()
-    res = extractor.extractFromURL(url)
+    res = extractor.extractFromHTML(res.text)
     print(res.get("text"))
 
 
