@@ -41,16 +41,17 @@ class DummySearchEngine:
 
 class CorpusSearchEngine:
     def __init__(self, vectorize_fn='lsi'):
+        import gensim
         self._vectorize_fn = vectorize_fn
         self._corpus = self.corpus_loader()
         self._corpuslist = ['psyonix', 'codwarzone', 'lastofus', 'larianstudios']
+        self._founddocs = []
         if self._vectorize_fn == "lsi":
             self.corpus_bow()
        # if vec_func == tfidf
        # corpus = ...
 
     def corpus_loader(self):
-        from gensim.utils import simple_preprocess
         docs = [open('wiki/psyonix.txt', 'r').read(), open('wiki/cod-warzone.txt', 'r').read(), open('wiki/last-of-us-2.txt', 'r').read(), open('wiki/larian-studios.txt', 'r').read()]
         for doc in docs:
             doc.replace("\n", " ")
@@ -59,18 +60,21 @@ class CorpusSearchEngine:
     def corpus_bow(self):
         from gensim.utils import simple_preprocess
         from gensim import corpora
-        tokenizer = [simple_preprocess(doc) for doc in corpus]
+        tokenizer = [simple_preprocess(doc) for doc in self._corpus]
         corpusbow = corpora.Dictionary()
         self._corpus = [corpusbow.doc2bow(doc, allow_update=True) for doc in tokenizer]
 
     def search_by_string(self, string):
         if self._vectorize_fn == "lsi":
-            from gensim import models
-            from gensim import similarities
+            from gensim import models, similarities, corpora
             lsi = models.LsiModel(self._corpus)
             index = similarities.MatrixSimilarity(lsi[self._corpus])
-            vec_bow = dict.doc2bow(string.lower().split())
+            vec_bow = corpora.Dictionary().doc2bow(string.lower().split())
             vec_lsi = lsi[vec_bow]
             sims = index[vec_lsi]
             sims = sorted(enumerate(sims), key=lambda item: -item[1])
-            return self._corpuslist[sims[0][0]][0:10]
+            for i in range(3):
+                title = self._corpuslist[sims[i][0]]
+                doc = FoundDocument(title)
+                self._founddocs.append(doc)
+            return self._founddocs
