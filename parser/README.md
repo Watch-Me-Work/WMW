@@ -1,5 +1,5 @@
 # Parser API
-####`BS4Extractor()`
+#### `BS4Extractor()`
 
 `extractFromURL(url)`
 
