@@ -57,36 +57,6 @@ class Extractor:
         pass
 
 
-# class H2TExtractor(Extractor):
-#     ''' Example html2text implementation of Extractor
-#     '''
-
-#     def __init__(self):
-#         super().__init__()
-
-#     def _requestPage(self, url):
-#         sess = Session()
-#         headers = {'User-Agent': 'Mozilla/5.0'}
-#         res = sess.request(method="GET", url=url, headers=headers)
-#         return res.status_code, res.text
-
-#     def _htmlToText(self, html):
-#         text_maker = HTML2Text()
-#         text = text_maker.handle(html)
-#         return text
-
-#     def extractFromURL(self, url):
-#         status, html = self._requestPage(url)
-#         text = self._htmlToText(html)
-#         self._response._text = text
-#         return self._response
-
-#     def extractFromHTML(self, html):
-#         text = self._htmlToText(html)
-#         self._response._text = text
-#         return self._response
-
-
 class BS4Extractor(Extractor):
     """docstring for BS4Extractor"""
     def __init__(self):
