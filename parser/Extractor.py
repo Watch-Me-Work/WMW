@@ -119,7 +119,7 @@ def main():
     res = sess.request(method="GET", url=url, headers=headers)
     html = res.text
     
-    parser = ContentExtractor("bs4")
+    parser = ContentExtractor("justext")
     response = parser.extractFromHTML(html)
     print(response.get("body"))
 
