@@ -1,6 +1,7 @@
 from requests import Session
 from html2text import HTML2Text
 from bs4 import BeautifulSoup
+import justext
 
 
 class Response:
@@ -40,10 +41,9 @@ class Extractor:
     3. Work well with most web pages.
     '''
     
-    def __init__(self):
+    def __init__(self, extractor):
         ''' Initialize Response object
         '''
-        self._response = Response()
         pass
 
     def extractFromURL(self, url):
@@ -57,35 +57,56 @@ class Extractor:
         pass
 
 
-class BS4Extractor(Extractor):
-    """docstring for BS4Extractor"""
-    def __init__(self):
-        super().__init__()
+class ContentExtractor(Extractor):
+    ''' Implementation of Extractor interface
+    '''
+    def __init__(self, extractor):
+        super().__init__(extractor)
+        self._extractor = extractor
+        self._response = Response()
 
-    def _requestPage(self, url):
+    def _httpRequest(self, url):
         sess = Session()
         headers = {'User-Agent': 'Mozilla/5.0'}
         res = sess.request(method="GET", url=url, headers=headers)
-        return res.status_code, res.text
+        
+        return res.text
 
-    def _texttobs4(self, text):
-        soup = BeautifulSoup(text,"html.parser")
+    def _bs4Extractor(self, html):
+        soup = BeautifulSoup(html, "html.parser")
         body = soup.find("body")
-        p = body.find_all("p",text=True)
+        p = body.find_all("p", text=True)
         text = ""
         for node in p:
             text += str(node.find_all(text=True))
+        
+        return text
+
+    def _justextExtractor(self, html):
+        ps = justext.justext(html, justext.get_stoplist("English"))
+        text = ""
+        for p in ps:
+            if not p.is_boilerplate:
+                text += p.text
+
         return text
 
     def extractFromURL(self, url):
-        status, html = self._requestPage(url)
-        text = self._texttobs4(html)
-        self._response._text = text
+        html = self._httpRequest(url)
+        self.extractFromHTML(html)
+
         return self._response
 
     def extractFromHTML(self, html):
-        text = self._texttobs4(html)
-        self._response._text = text
+        text = ""
+        if self._extractor == "justext":
+            text = self._justextExtractor(html)
+        elif self._extractor == "bs4":
+            text = self._bs4Extractor(html)
+        else:
+            raise Exception("Invalid extractor name")
+
+        self._response._body = text
         return self._response
 
 
@@ -96,10 +117,11 @@ def main():
     sess = Session()
     headers = {'User-Agent': 'Mozilla/5.0'}
     res = sess.request(method="GET", url=url, headers=headers)
+    html = res.text
     
-    extractor = BS4Extractor()
-    res = extractor.extractFromHTML(res.text)
-    print(res.get("text"))
+    parser = ContentExtractor("bs4")
+    response = parser.extractFromHTML(html)
+    print(response.get("body"))
 
 
 if __name__ == '__main__':
