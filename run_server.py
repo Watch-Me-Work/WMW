@@ -3,21 +3,25 @@ import json
 import time
 
 from search import BingRelatedDocumentFinder, DummyRelatedDocumentFinder, CorpusRelatedDocumentFinder
-from parser import Response, H2TExtractor
+from parser import Response, H2TExtractor,  BS4Extractor
 
 HOSTNAME = 'localhost'
 WMW_PORT = 3380
 
 class WmwRequestHandler(BaseHTTPRequestHandler):
     def do_POST(self):
-        print(self.path)
+        if self.path != '/find_related':
+            self.send_response(404)
+            self.send_header("Content-type", "application/json")
+            self.end_headers()
+            self.wfile.write(json.dumps({'error': 'unknown endpoint'}).encode('utf-8'))
+
         request_params = json.loads(self.rfile.read(int(self.headers['content-length'])).decode('utf-8'))
-        finder = CorpusRelatedDocumentFinder()
+        finder = BingRelatedDocumentFinder()
+        # FIXME: This BS4Extractor returns Response with empty text for tests/test_request_wiki
+        #extractor = BS4Extractor()
         extractor = H2TExtractor()
-        # TODO: This does not conform to API.  Should be extract(), not _htmlToText(), but can't be fixed until parser conforms to API.
-        text = extractor._htmlToText(request_params['document_html'])
-        tmp = Response()
-        tmp._text = text
+        tmp = extractor.extractFromHTML(request_params['document_html'])
         result = finder.search(tmp)
         result = {'results': [{'title': r.get_title()} for r in result]}
 
