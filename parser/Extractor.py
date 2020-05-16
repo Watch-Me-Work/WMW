@@ -14,7 +14,6 @@ class Response:
         self._footer = ""
         self._text = ""
         self._raw = ""
-        self._status = 0
 
     def get(self, name):
         ''' public interface, return the requested section of 
@@ -28,11 +27,6 @@ class Response:
             "raw": self._raw
         }
         return switcher[name]
-
-    def status(self):
-        ''' public interface, return HTTP request status code.
-        '''
-        return self._status
 
 
 class Extractor:
@@ -84,13 +78,11 @@ class Extractor:
 #     def extractFromURL(self, url):
 #         status, html = self._requestPage(url)
 #         text = self._htmlToText(html)
-#         self._response._status = status
 #         self._response._text = text
 #         return self._response
 
 #     def extractFromHTML(self, html):
 #         text = self._htmlToText(html)
-#         self._response._status = status
 #         self._response._text = text
 #         return self._response
 
@@ -118,7 +110,6 @@ class BS4Extractor(Extractor):
     def extractFromURL(self, url):
         status, html = self._requestPage(url)
         text = self._texttobs4(html)
-        self._response._status = status
         self._response._text = text
         return self._response
 
