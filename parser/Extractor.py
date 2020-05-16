@@ -38,7 +38,7 @@ class Extractor:
     Intented implementations:
     1. Supports both static and dynamic web documents.
     2. Produces text with minimal noise.
-    3. Work well with most web pages.
+    3. Work well with a wide range of websites.
     '''
     
     def __init__(self, extractor):
