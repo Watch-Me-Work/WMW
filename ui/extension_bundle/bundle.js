@@ -25,21 +25,8 @@ exports.Request = global.Request;
 exports.Response = global.Response;
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],2:[function(require,module,exports){
-function summarize() {
-	chrome.tabs.executeScript(null, { file: "jquery-2.2.js" }, function() {
-	    chrome.tabs.executeScript(null, { file: "content.js" });
-	});
-}
-document.getElementById('clickme').addEventListener('click', summarize);
 
 const fetch = require("node-fetch");
-
-function unicodeToChar(text) {
-	return text.replace(/\\u[\dA-F]{4}/gi, 
-	      function (match) {
-	           return String.fromCharCode(parseInt(match.replace(/\\u/g, ''), 16));
-	      });
-}
 
 // capture all text
 //var textToSend = document.body.innerText;
@@ -49,18 +36,23 @@ var textToSend = {"document_html": "Penguins (order Sphenisciformes, family Sphe
 // summarize and send back
 const api_url = 'http://localhost:3380';
 
-fetch(api_url, {
-  method: 'POST',
-  body: JSON.stringify(textToSend),
-  headers:{
-    'Content-Type': 'application/json'
-  } })
-.then(data => { 
-	return data.json() })
-.then(res => { 
-	console.log(res)
- })
-.catch(error => console.error('Error:', error));
+
+function summarize() {
+	fetch(api_url, {
+		method: 'POST',
+		body: JSON.stringify(textToSend),
+		headers:{
+		  'Content-Type': 'application/json'
+		} })
+	  .then(data => { 
+		  return data.json() })
+	  .then(res => { 
+		  console.log(res)
+	   })
+	  .catch(error => console.error('Error:', error));
+}
+
+document.getElementById('clickme').addEventListener('click', summarize);
 
 
 },{"node-fetch":1}]},{},[2]);
