@@ -1,5 +1,4 @@
 from requests import Session
-from html2text import HTML2Text
 from bs4 import BeautifulSoup
 import justext
 
@@ -10,10 +9,8 @@ class Response:
     '''
     
     def __init__(self):
-        self._header = ""
+        self._title = ""
         self._body = ""
-        self._footer = ""
-        self._text = ""
         self._raw = ""
 
     def get(self, name):
@@ -21,10 +18,8 @@ class Response:
         the response.
         '''
         switcher = {
-            "header": self._header,
+            "title": self._title,
             "body": self._body,
-            "footer": self._footer,
-            "text": self._text,
             "raw": self._raw
         }
         return switcher[name]
@@ -41,7 +36,7 @@ class Extractor:
     3. Work well with a wide range of websites.
     '''
     
-    def __init__(self, extractor):
+    def __init__(self):
         ''' Initialize Response object
         '''
         pass
@@ -57,12 +52,11 @@ class Extractor:
         pass
 
 
-class ContentExtractor(Extractor):
+class ContentExtractor():
     ''' Implementation of Extractor interface
     '''
-    def __init__(self, extractor):
-        super().__init__(extractor)
-        self._extractor = extractor
+    def __init__(self):
+        super().__init__()
         self._response = Response()
 
     def _httpRequest(self, url):
@@ -72,25 +66,6 @@ class ContentExtractor(Extractor):
         
         return res.text
 
-    def _bs4Extractor(self, html):
-        soup = BeautifulSoup(html, "html.parser")
-        body = soup.find("body")
-        p = body.find_all("p", text=True)
-        text = ""
-        for node in p:
-            text += str(node.find_all(text=True))
-        
-        return text
-
-    def _justextExtractor(self, html):
-        ps = justext.justext(html, justext.get_stoplist("English"))
-        text = ""
-        for p in ps:
-            if not p.is_boilerplate:
-                text += p.text
-
-        return text
-
     def extractFromURL(self, url):
         html = self._httpRequest(url)
         self.extractFromHTML(html)
@@ -98,29 +73,35 @@ class ContentExtractor(Extractor):
         return self._response
 
     def extractFromHTML(self, html):
+        soup = BeautifulSoup(html, "html.parser")
+        self._response._title = soup.title.string
+
         text = ""
-        if self._extractor == "justext":
-            text = self._justextExtractor(html)
-        elif self._extractor == "bs4":
-            text = self._bs4Extractor(html)
-        else:
-            raise Exception("Invalid extractor name")
+        ps = justext.justext(html, justext.get_stoplist("English"))
+        for p in ps:
+            if not p.is_boilerplate:
+                text += p.text
 
         self._response._body = text
+        self._response._raw = html
         return self._response
 
 
 def main():
     # usage of example extractor
     url = "https://www.foxnews.com/politics/grenell-declassifies-names-of-obama-officials-who-unmasked-flynn-report-says"
+    url = "https://github.com/dalab/web2text"
+    url = "https://medium.com/@laura.derohan/compiling-c-files-with-gcc-step-by-step-8e78318052"
+    url = "https://www.geeksforgeeks.org/tabulation-vs-memoization/"
 
-    sess = Session()
-    headers = {'User-Agent': 'Mozilla/5.0'}
-    res = sess.request(method="GET", url=url, headers=headers)
-    html = res.text
+    # sess = Session()
+    # headers = {'User-Agent': 'Mozilla/5.0'}
+    # res = sess.request(method="GET", url=url, headers=headers)
+    # html = res.text
     
-    parser = ContentExtractor("justext")
-    response = parser.extractFromHTML(html)
+    parser = ContentExtractor()
+    # response = parser.extractFromHTML(html)
+    response = parser.extractFromURL(url)
     print(response.get("body"))
 
 
