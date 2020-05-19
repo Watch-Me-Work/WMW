@@ -1,6 +1,5 @@
 chrome.runtime.onMessage.addListener(function(msg, sender){
     if(msg == "toggle"){
-    	    	console.log("HELLO THIS WAS TOGGLED")
         toggle();
     }
 })
@@ -20,8 +19,7 @@ document.body.appendChild(iframe);
 
 function toggle(){
     if(iframe.style.width == "0px"){
-    	console.log(" THIS WAS TOGGLED INSIDE")
-        iframe.style.width="400px";
+        iframe.style.width="35%";
     }
     else{
         iframe.style.width="0px";

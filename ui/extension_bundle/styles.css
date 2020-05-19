@@ -1,16 +1,42 @@
 body {
 	overflow:hidden;
-  border-radius: 100px;
   background-color: #98C9A3;
 }
 
 #main-container {
-  width: 35em; 
+  width: 100%; 
   text-align: center;
   padding-top: 5%;
   border-radius: 50px;
 }
 
+#results-container {
+	margin-top: 5%;
+	padding-top: 5%;
+	text-align: center;
+}
+
 #toggle-switch {
   padding-bottom: 2%;
+}
+
+#close-button-row {
+	padding-bottom: 3%;
+}
+
+.rounded {
+    border-radius: 50px !important;
+    overflow: hidden !important;
+    outline: .35rem solid white;
+    padding-top: 4%;
+    padding-bottom: 2%;
+}
+
+.results-list {
+	align-items: center;
+	display: flex;	
+}
+
+#result-item {
+	margin-bottom: 3%;
 }
