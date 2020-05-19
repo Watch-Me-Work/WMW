@@ -1,0 +1,16 @@
+body {
+	overflow:hidden;
+  border-radius: 100px;
+  background-color: #98C9A3;
+}
+
+#main-container {
+  width: 35em; 
+  text-align: center;
+  padding-top: 5%;
+  border-radius: 50px;
+}
+
+#toggle-switch {
+  padding-bottom: 2%;
+}
