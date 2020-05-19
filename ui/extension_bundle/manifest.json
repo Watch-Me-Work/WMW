@@ -2,15 +2,23 @@
   "manifest_version": 2,
   "name": "Watch Me Work",
   "version": "0.1",
-  "permissions": ["activeTab", "http://localhost/*"],
+  "permissions": ["activeTab", "http://localhost/*", "<all_urls>"],
   "description": "A Chrome Extension for Real-time Automatic Searching",
   "icons": {"16": "icon16.png",
             "48": "icon48.png",
             "128": "icon128.png" },
-  "browser_action": {
-   "default_icon": "tab-icon.png",
-   "default_title": "Highlight the important stuff",
-   "default_popup": "popup.html"
-  }
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*/*",
+        "http://*/*"
+      ],
+      "js": ["content-script.js"]
+    }
+  ],
+  "browser_action": {},
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "web_accessible_resources": ["sidebar.html", "popup.html"]
 }
-
