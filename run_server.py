@@ -16,6 +16,7 @@ class WmwRequestHandler(BaseHTTPRequestHandler):
             self.send_header("Content-type", "application/json")
             self.end_headers()
             self.wfile.write(json.dumps({'error': 'unknown endpoint'}).encode('utf-8'))
+            return
 
         request_params = json.loads(self.rfile.read(int(self.headers['content-length'])).decode('utf-8'))
         finder = self.server.doc_finder
