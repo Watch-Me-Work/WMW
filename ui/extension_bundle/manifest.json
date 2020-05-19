@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Watch Me Work",
   "version": "0.1",
-  "permissions": ["activeTab", "YOUR_GOOGLE_CLOUD_FUNCTION_URL"],
+  "permissions": ["activeTab", "http://localhost/*"],
   "description": "A Chrome Extension for Real-time Automatic Searching",
   "icons": {"16": "icon16.png",
             "48": "icon48.png",
