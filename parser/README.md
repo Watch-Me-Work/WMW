@@ -1,5 +1,5 @@
 # Parser API
-#### `BS4Extractor()`
+#### `ContentExtractor`
 
 `extractFromURL(url)`
 
@@ -31,7 +31,7 @@ Return:
 
 
 
-#### `Response()`
+#### `Response`
 
 `get(name)`
 
@@ -39,8 +39,9 @@ Return:
 
 Args:
 
-* `name`: name of target segment, options including "header", "body", "footer", "text", "raw"
+* `name`: name of target segment, options including "title", "body", "raw"
 
 Return:
 
 * Strings of specified part of the document.
+
