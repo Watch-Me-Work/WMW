@@ -11,7 +11,8 @@ class BingRelatedDocumentFinder(RelatedDocumentFinder):
         self._engine = BingSearchEngine()
 
     def search(self, document):
-        querystring = get_keywords_by_ner(document.get('text'))[0]
+        ents = get_keywords_by_ner(document.get('text'))
+        querystring = ents[0]
         return self._engine.search_by_string(querystring)
 
 class DummyRelatedDocumentFinder(RelatedDocumentFinder):
