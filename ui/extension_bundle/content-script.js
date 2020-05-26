@@ -3,7 +3,9 @@ chrome.runtime.onMessage.addListener(function(msg, sender){
         toggle();
     }
 })
+var textToSend = document.body.textContent
 
+//var iframe = document.createElement('iframe'); 
 var iframe = document.createElement('iframe'); 
 iframe.style.background = "green";
 iframe.style.height = "100%";
@@ -13,9 +15,15 @@ iframe.style.top = "0px";
 iframe.style.right = "0px";
 iframe.style.zIndex = "9000000000000000000";
 iframe.frameBorder = "none"; 
-iframe.src = chrome.extension.getURL("sidebar.html")
+iframe.src = chrome.extension.getURL("sidebar.html");
+iframe.id = "myIframe"
+iframe.onload = function () {
+    var win = document.getElementById("myIframe").contentWindow;
+    win.postMessage(textToSend,"*");
+}
 
 document.body.appendChild(iframe);
+
 
 function toggle(){
     if(iframe.style.width == "0px"){
