@@ -31,6 +31,8 @@ const api_url = 'http://localhost:3380/find_related';
 var textToSend = null
 
 window.addEventListener("message", function(e){
+	console.log('data is')
+	console.log(e.data)
 	textToSend = {"document_html": e.data};
 	summarize()
     
@@ -44,14 +46,18 @@ function summarize() {
 		  'Content-Type': 'application/json'
 		} })
 	  .then(data => { 
-		  return data.json() })
+	  		data.json().then(jsonData => {
+	  			console.log('got a data response')
+	  			console.log(jsonData)
+	  		})	
+		  })
 	  .then(res => { 
 		  console.log(res)
 	   })
 	  .catch(error => console.error('Error:', error));
 }
 
-document.getElementById('clickme').addEventListener('click', summarize);
+document.getElementById('searchButton').addEventListener('click', summarize);
 
 
 },{"node-fetch":1}]},{},[2]);

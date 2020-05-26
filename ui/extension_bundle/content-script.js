@@ -3,6 +3,9 @@ chrome.runtime.onMessage.addListener(function(msg, sender){
         toggle();
     }
 })
+
+var sideBarOpen = false;
+
 var textToSend = document.body.textContent
 
 //var iframe = document.createElement('iframe'); 
@@ -28,8 +31,10 @@ document.body.appendChild(iframe);
 function toggle(){
     if(iframe.style.width == "0px"){
         iframe.style.width="35%";
+        sideBarOpen = true;
     }
     else{
         iframe.style.width="0px";
+        sideBarOpen = false;
     }
 }
