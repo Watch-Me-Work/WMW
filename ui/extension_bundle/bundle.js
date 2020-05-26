@@ -31,14 +31,12 @@ const api_url = 'http://localhost:3380/find_related';
 var textToSend = null
 
 window.addEventListener("message", function(e){
-	console.log('data is')
-	console.log(e.data)
 	textToSend = {"document_html": e.data};
 	summarize()
-    
 }, false);
 
 function summarize() {
+	// todo: maybe pass the text into the function instead of having it as a global?
 	fetch(api_url, {
 		method: 'POST',
 		body: JSON.stringify(textToSend),
@@ -47,14 +45,55 @@ function summarize() {
 		} })
 	  .then(data => { 
 	  		data.json().then(jsonData => {
-	  			console.log('got a data response')
 	  			console.log(jsonData)
+	  			updateResultSidebar(jsonData['results'])
 	  		})	
 		  })
 	  .then(res => { 
 		  console.log(res)
 	   })
 	  .catch(error => console.error('Error:', error));
+}
+
+// todo: move to sidebar.js
+function updateResultSidebar(resultsData) {
+	let resultsList = makeResultList(resultsData)
+	console.log(document.getElementById('resultsList'))
+	document.getElementById('resultsList').innerHTML = resultsList;
+	// document.getElementById('resultsList').text = resultsList;
+
+}
+
+
+function makeResultList(results) {
+    // Create the list element:
+    let mainDiv = document.createElement('div');
+
+    let divHtml = '';
+    console.log(results)
+    for (let result of results) {
+    	const pageLink = 'https:'
+    	const pageTitle = result.title
+
+    	// hacky but cbf to implement bootstrap elements manually
+    	const newDivContent = `
+    	        <div class="list-group-item list-group-item-action" id="result-item">
+                <div class="d-flex w-100 justify-content-between">
+                  <h5 class="mb-1">${pageTitle}</h5>
+                  <small>Match Score?</small>
+                </div>
+                <p class="mb-1">A short description about the article/content of the page.</p>
+                <a href="${pageLink}" target="_blank"><button type="button" class="btn btn-info btn-lg btn-block">Go to ${pageTitle.slice(0, 30)}</button></a>
+              </div>
+
+        `
+        divHtml += newDivContent
+    }
+
+    mainDiv.innerHtml = divHtml;
+
+    // Finally, return the constructed list:
+    return divHtml;
 }
 
 document.getElementById('searchButton').addEventListener('click', summarize);
