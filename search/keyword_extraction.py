@@ -18,23 +18,27 @@ def get_keywords_by_ner(document):
 
     nlp = get_spacynlp('en_core_web_sm')
     spacydoc = nlp(document)
-    ent_freqs = collections.Counter([str(ent) for ent in spacydoc.ents])
-    all_ents = list(ent_freqs.keys())
+    ent_freqs = collections.Counter()
     keywords = []
-    for ent in all_ents:
+    for ent in map(str, spacydoc.ents):
         if ent.lower() in BLACKLIST:
             continue
 
-        # Prune ents that are just a substring of other ents (note: could have
-        # some false prunes if one person's name is a substring of another)
-        if any((ent.lower() in ent2.lower()) and (ent != ent2) for ent2 in all_ents):
+        if re.match(r'.*[^ a-zA-Z0-9].*', ent) or re.match('[0-9 ]+', ent):
             continue
 
-        if re.match(r'.*[^ a-zA-Z0-9].*', ent):
+        ent_freqs[ent] += 1
+
+    keywords = []
+    for ent, freq in ent_freqs.items():
+        # Prune ents that are just a substring of other ents (note: could have
+        # some false prunes if one person's name is a substring of another)
+        if any((ent.lower() in ent2.lower()) and (ent != ent2) for ent2 in ent_freqs.keys()):
             continue
 
         # TODO: Consider pruning low-freq ents (which are more likely to be erroneous)
 
         keywords.append(ent)
+
     return sorted(keywords, key=ent_freqs.get, reverse=True)
 

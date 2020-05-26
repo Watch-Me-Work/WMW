@@ -3,11 +3,15 @@ import requests
 
 
 class FoundDocument:
-    def __init__(self, title):
+    def __init__(self, title, url=None):
         self.title = title
+        self.url = url
 
     def get_title(self):
         return self.title
+
+    def get_url(self):
+        return self.url
 
 
 class BingSearchEngine:
@@ -24,7 +28,7 @@ class BingSearchEngine:
             response.raise_for_status()
             found_documents = []
             for result in response.json()['webPages']['value']:
-                found_documents.append(FoundDocument(result['name']))
+                found_documents.append(FoundDocument(result['name'], url=result['url']))
             return found_documents
         except Exception as ex:
             raise ex
