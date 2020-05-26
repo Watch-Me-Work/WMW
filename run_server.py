@@ -4,7 +4,7 @@ import json
 import time
 
 from search import BingRelatedDocumentFinder, DummyRelatedDocumentFinder, CorpusRelatedDocumentFinder
-from parser import Response, H2TExtractor,  BS4Extractor
+from parser import Response, ContentExtractor
 
 HOSTNAME = 'localhost'
 WMW_PORT = 3380
@@ -39,6 +39,8 @@ class WmwServer(HTTPServer):
             self.text_extractor = H2TExtractor()
         elif self.cmdargs.parser_type == 'bs4':
             self.text_extractor = BS4Extractor()
+        elif self.cmdargs.parser_type == 'justext':
+            self.text_extractor = ContentExtractor()
         else:
             raise ValueError("Unknown parser type")
 
@@ -52,7 +54,7 @@ class WmwServer(HTTPServer):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--parser_type', choices=['h2t', 'bs4'], default='bs4')
+    parser.add_argument('--parser_type', choices=['justext'], default='justext')
     parser.add_argument('--finder_type', choices=['bing', 'corpus'], default='corpus')
     args = parser.parse_args()
 
