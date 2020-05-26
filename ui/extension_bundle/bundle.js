@@ -72,7 +72,7 @@ function makeResultList(results) {
     let divHtml = '';
     console.log(results)
     for (let result of results) {
-    	const pageLink = 'https:'
+    	const pageLink = result.url
     	const pageTitle = result.title
 
     	// hacky but cbf to implement bootstrap elements manually
