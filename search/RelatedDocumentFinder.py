@@ -11,7 +11,8 @@ class BingRelatedDocumentFinder(RelatedDocumentFinder):
         self._engine = BingSearchEngine()
 
     def search(self, document):
-        ents = get_keywords_by_ner(document.get('text'))
+        ents = get_keywords_by_ner(document.get('body'))
+        print(document.get('body'))
         querystring = ents[0]
         return self._engine.search_by_string(querystring)
 
@@ -28,4 +29,4 @@ class CorpusRelatedDocumentFinder(RelatedDocumentFinder):
         self._engine = CorpusSearchEngine()
 
     def search(self, document):
-        return self._engine.search_by_string(document.get('text'))
+        return self._engine.search_by_string(document.get('body'))
