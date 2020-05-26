@@ -23,8 +23,12 @@ class WmwRequestHandler(BaseHTTPRequestHandler):
         extractor = self.server.text_extractor
         doc_content = extractor.extractFromHTML(request_params['document_html'])
         result = finder.search(doc_content)
-        result = {'results': [{'title': r.get_title()} for r in result]}
-        print(result, request_params)
+        result = {'results': [
+            {
+                'title': r.get_title(),
+                'url': r.get_url(),
+            }
+            for r in result]}
 
         self.send_response(200)
         self.send_header("Content-type", "application/json")
