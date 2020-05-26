@@ -74,13 +74,14 @@ class H2TExtractor(Extractor):
     def extractFromURL(self, url):
         status, html = self._requestPage(url)
         text = self._htmlToText(html)
-        self._response._text = text
+        self._response = Response()
+        self._response._body = text
         return self._response
 
     def extractFromHTML(self, html):
         text = self._htmlToText(html)
         self._response = Response()
-        self._response._text = text
+        self._response._body = text
         return self._response
 
 
