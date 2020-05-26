@@ -14,7 +14,7 @@ def get_spacynlp(model_name, use_cache=True):
 
 def get_keywords_by_ner(document):
     # Blacklist some things that are never entities (sometimes spacy makes mistakes)
-    BLACKLIST = set({'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'})
+    BLACKLIST = set({'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'first', 'second', 'third'})
 
     nlp = get_spacynlp('en_core_web_sm')
     spacydoc = nlp(document)

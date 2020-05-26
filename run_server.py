@@ -4,7 +4,7 @@ import json
 import time
 
 from search import BingRelatedDocumentFinder, DummyRelatedDocumentFinder, CorpusRelatedDocumentFinder
-from parser import Response, ContentExtractor
+from parser import Response, H2TExtractor, ContentExtractor
 
 HOSTNAME = 'localhost'
 WMW_PORT = 3380
@@ -24,6 +24,7 @@ class WmwRequestHandler(BaseHTTPRequestHandler):
         doc_content = extractor.extractFromHTML(request_params['document_html'])
         result = finder.search(doc_content)
         result = {'results': [{'title': r.get_title()} for r in result]}
+        print(result, request_params)
 
         self.send_response(200)
         self.send_header("Content-type", "application/json")
@@ -54,7 +55,7 @@ class WmwServer(HTTPServer):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--parser_type', choices=['justext'], default='justext')
+    parser.add_argument('--parser_type', choices=['h2t', 'bs4', 'justext'], default='h2t')
     parser.add_argument('--finder_type', choices=['bing', 'corpus'], default='corpus')
     args = parser.parse_args()
 
