@@ -13,6 +13,7 @@ class Response:
         self._title = ""
         self._body = ""
         self._raw = ""
+        self._first = ""
 
     def get(self, name):
         ''' public interface, return the requested section of 
@@ -21,7 +22,8 @@ class Response:
         switcher = {
             "title": self._title,
             "body": self._body,
-            "raw": self._raw
+            "raw": self._raw,
+            "first": self._first
         }
         return switcher[name]
 
@@ -110,15 +112,23 @@ class ContentExtractor():
         soup = BeautifulSoup(html, "html.parser")
         self._response._title = soup.title.string
 
+
         text = ""
+        first = False
         ps = justext.justext(html, justext.get_stoplist("English"))
         for p in ps:
             if not p.is_boilerplate:
                 text += p.text
-
+                if first == False and len(p.text.split(" "))>5:
+                    self._response._first = p.text
+                    first = True
         self._response._body = text
         self._response._raw = html
         return self._response
+    
+
+
+
 
 
 def main():
@@ -127,6 +137,7 @@ def main():
     url = "https://github.com/dalab/web2text"
     url = "https://medium.com/@laura.derohan/compiling-c-files-with-gcc-step-by-step-8e78318052"
     url = "https://www.geeksforgeeks.org/tabulation-vs-memoization/"
+    url = "https://www.cnn.com/2020/05/26/media/trump-joe-scarborough-conspiracy-theory/index.html"
 
     # sess = Session()
     # headers = {'User-Agent': 'Mozilla/5.0'}
@@ -136,7 +147,7 @@ def main():
     parser = ContentExtractor()
     # response = parser.extractFromHTML(html)
     response = parser.extractFromURL(url)
-    print(response.get("body"))
+    print(response.get("first"))
 
 
 if __name__ == '__main__':
