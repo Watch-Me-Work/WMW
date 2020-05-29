@@ -27,17 +27,16 @@ exports.Response = global.Response;
 },{}],2:[function(require,module,exports){
 
 const fetch = require("node-fetch");
-
-// capture all text
-//var textToSend = document.body.innerText;
-
-var textToSend = {"document_html": "Penguins (order Sphenisciformes, family Spheniscidae) are a group of aquatic flightless birds. They live almost exclusively in the Southern Hemisphere, with only one species, the Galápagos penguin, found north of the equator. Highly adapted for life in the water, penguins have countershaded dark and white plumage and flippers for swimming. Most penguins feed on krill, fish, squid and other forms of sea life which they catch while swimming underwater. They spend roughly half of their lives on land and the other half in the sea."};
-
-// summarize and send back
 const api_url = 'http://localhost:3380/find_related';
+var textToSend = null
 
+window.addEventListener("message", function(e){
+	textToSend = {"document_html": e.data};
+	summarize()
+}, false);
 
 function summarize() {
+	// todo: maybe pass the text into the function instead of having it as a global?
 	fetch(api_url, {
 		method: 'POST',
 		body: JSON.stringify(textToSend),
@@ -45,15 +44,59 @@ function summarize() {
 		  'Content-Type': 'application/json'
 		} })
 	  .then(data => { 
-		  return data.json() })
+	  		data.json().then(jsonData => {
+	  			console.log(jsonData)
+	  			updateResultSidebar(jsonData['results'])
+	  		})	
+		  })
 	  .then(res => { 
-          alert(JSON.stringify(res));
-		  console.log(res);
+		  console.log(res)
 	   })
 	  .catch(error => console.error('Error:', error));
 }
 
-document.getElementById('clickme').addEventListener('click', summarize);
+// todo: move to sidebar.js
+function updateResultSidebar(resultsData) {
+	let resultsList = makeResultList(resultsData)
+	console.log(document.getElementById('resultsList'))
+	document.getElementById('resultsList').innerHTML = resultsList;
+	// document.getElementById('resultsList').text = resultsList;
+
+}
+
+
+function makeResultList(results) {
+    // Create the list element:
+    let mainDiv = document.createElement('div');
+
+    let divHtml = '';
+    console.log(results)
+    for (let result of results) {
+    	const pageLink = result.url
+    	const pageTitle = result.title
+
+    	// hacky but cbf to implement bootstrap elements manually
+    	const newDivContent = `
+    	        <div class="list-group-item list-group-item-action" id="result-item">
+                <div class="d-flex w-100 justify-content-between">
+                  <h5 class="mb-1">${pageTitle}</h5>
+                  <small>Match Score?</small>
+                </div>
+                <p class="mb-1">A short description about the article/content of the page.</p>
+                <a href="${pageLink}" target="_blank"><button type="button" class="btn btn-info btn-lg btn-block">Go to ${pageTitle.slice(0, 30)}</button></a>
+              </div>
+
+        `
+        divHtml += newDivContent
+    }
+
+    mainDiv.innerHtml = divHtml;
+
+    // Finally, return the constructed list:
+    return divHtml;
+}
+
+document.getElementById('searchButton').addEventListener('click', summarize);
 
 
 },{"node-fetch":1}]},{},[2]);
