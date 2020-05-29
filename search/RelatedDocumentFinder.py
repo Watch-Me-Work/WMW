@@ -27,7 +27,7 @@ class BingRelatedDocumentFinder(RelatedDocumentFinder):
         querystrings += ents_fulldoc[:3]
         results = []
         with multiprocessing.Pool(1) as pool:
-            results = itertools.chain(*[res[:2] for res in pool.imap(self._engine.search_by_string, querystrings)])
+            results = itertools.chain(*[res[:1] for res in pool.imap(self._engine.search_by_string, querystrings)])
         return results
 
 class DummyRelatedDocumentFinder(RelatedDocumentFinder):
