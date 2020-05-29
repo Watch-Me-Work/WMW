@@ -110,8 +110,8 @@ class ContentExtractor():
 
     def extractFromHTML(self, html):
         soup = BeautifulSoup(html, "html.parser")
-        self._response._title = soup.title.string
-
+        if soup.title is not None:
+            self._response._title = soup.title.string
 
         text = ""
         first = False
