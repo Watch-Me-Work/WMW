@@ -1,0 +1,8 @@
+Sulfuric acid is the largest-volume industrial chemical produced in the world (200 million tons per year). Concentrated sulfuric acid (93-98 %) is used in the manufacture of fertilizers, explosives, dyes, and petroleum products.
+
+The starting material for sulfuric acid manufacture is clean, dry sulfur dioxide (SO2) gas. This can be obtained by burning molten sulfur, from metallurgical off-gases or by decomposing spent sulfuric acid.
+Over the last decades the contact process has been used to produce sulfuric acid, replacing the traditional «Lead Chamber» process dating back to the 18th Century.
+
+In the contact process SO2 is oxidized to sulfur trioxide (SO3) at high temperature (about 450°C) in the presence of a vanadium catalyst. SO3 then is dissolved in concentrated sulfuric acid forming fuming sulfuric acid (oleum). This can then be reacted safely with water to produce concentrated sulfuric acid.
+
+Major changes have been made in process and plant design to maximize energy recovery and then use this heat to generate high-pressure steam and/or electricity. The older «single absorption» process has been largely replaced by the «double absorption» process which increases yield of acid and reduces emissions. A typical flowchart for a double absorption sulfuric acid plant is shown in figure 1.
