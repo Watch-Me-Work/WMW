@@ -5,9 +5,6 @@ import spacy
 
 import os
 from gensim import corpora, models
-import gensim 
-import pandas as pd
-import numpy as np
 from nltk.stem import WordNetLemmatizer
 
 spacynlp_cache = dict()
@@ -82,6 +79,7 @@ def clean_text(text):
     return text
 
 def clean_texts(txts):
+    stopwords = [word.strip() for word in open('./stopwords.txt','r').readlines()]
     cleaned_txt = []
     wnl = WordNetLemmatizer()
     for txt in txts:       
@@ -105,10 +103,8 @@ def LDAtraining(DocumentName):
     They are stored in the file named middata in a same directory with py file
     Returns a list countained topic id with words sorted by topic relevance
     '''
-    stopwords = [word.strip() for word in open('./stopwords.txt','r').readlines()]
-    path = os.getcwd()
-    middatafolder = path + os.sep + 'middata' + os.sep
     
+    path = os.getcwd()
     # file path stores the model files and dictionary 
     middatafolder = path + os.sep + 'middata' + os.sep
     dictionary_path = middatafolder + 'dictionary.dictionary'
