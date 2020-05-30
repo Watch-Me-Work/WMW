@@ -3,6 +3,7 @@ import re
 
 import spacy
 
+import gensim
 import os
 from gensim import corpora, models
 from nltk.stem import WordNetLemmatizer
@@ -49,17 +50,6 @@ def get_keywords_by_ner(document):
 
 ###LDA part###
 
-def read_testFile(name):
-
-    f = open(name, encoding='UTF-8')
-    lines = f.read()
-    res = []
-    input = []
-    input.append(lines)
-    res.append(input)
-    f.close()
-    return res
-
 def clean_text(text):
     
     text = re.sub("<.*?>", " ", text)  
@@ -102,13 +92,13 @@ def clean_texts(txts):
     
     return cleaned_txt
 
-def LDAtraining(DocumentName):
+def LDAtraining(input_string):
     '''
-    input is the name of the document like "test_article.txt" ,it is stored in a same directory with py file
+    input is a string of the document ,it is stored in a same directory with py file
     stopword is a txt file which is stored in a same directory with py file
     Required LDA model files include dictionary.dictionary, lda.model, lda.model.expElogbeta.npy, lda.model.id2word, lda.model.state, lda.model.state.sstats.npy
     They are stored in the file named middata in a same directory with py file
-    Returns a list countained topic id with words sorted by topic relevance
+    Returns a list countained strings of topics sorted by topic relevance
     '''
     
     path = os.getcwd()
@@ -120,8 +110,9 @@ def LDAtraining(DocumentName):
     lda = models.ldamodel.LdaModel.load(middatafolder + 'lda.model')    
     dictionary = corpora.Dictionary.load(dictionary_path)
     # document text process and bow generation  
-    predict_txt = read_testFile(DocumentName)
-    cleaned_txt = clean_texts(predict_txt)
+    inputlist = [[]]
+    inputlist[0].append(input_string)
+    cleaned_txt = clean_texts(inputlist)
     corpus = [dictionary.doc2bow(text) for text in cleaned_txt]
     
     # topics prediction
@@ -132,8 +123,12 @@ def LDAtraining(DocumentName):
     res.sort( key = lambda x: - x[1] )  
     matched_ids = []
     
+    accumulated = 0
     for item in res:
         matched_ids.append(item[0])
+        accumulated += item[1]
+        if accumulated >= 0.8:
+            break
         
     x=lda.show_topics(num_topics = -1,num_words=7,formatted=False)
     topics_words = [(tp[0], [wd[0] for wd in tp[1]]) for tp in x]
@@ -141,12 +136,17 @@ def LDAtraining(DocumentName):
     
     for topic,words in topics_words:
         if topic in matched_ids:
-            matched_results[topic] = str(words)
+            matched_results[topic] = words
             
     predicted_topics = []
     
     for s in matched_ids:
-        predicted_topics.append([s,matched_results[s]])
+        cur = matched_results[s]
+        strg = ''
+        for s in cur:
+            strg += s + ' '
+
+        predicted_topics.append(strg)
    
     
     return predicted_topics
