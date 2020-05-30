@@ -78,6 +78,13 @@ def clean_text(text):
 
     return text
 
+def make_bigrams(texts):
+    
+    bigram = gensim.models.Phrases(texts, min_count=3, threshold=100)
+    bigram_mod = gensim.models.phrases.Phraser(bigram)
+    
+    return [bigram_mod[doc] for doc in texts]
+
 def clean_texts(txts):
     stopwords = [word.strip() for word in open('./stopwords.txt','r').readlines()]
     cleaned_txt = []
