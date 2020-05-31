@@ -1,7 +1,7 @@
 from requests import Session
 from html2text import HTML2Text
 from bs4 import BeautifulSoup
-
+from parser import obtain_content
 
 class Response:
     ''' Response defines the returned object for Extractor.
@@ -76,9 +76,14 @@ class H2TExtractor(Extractor):
         return text
 
     def extractFromURL(self, url):
-        status, html = self._requestPage(url)
-        text = self._htmlToText(html)
-        self._response._text = text
+        if "docs.google.com" in url:
+            status, html = self._requestPage(url)
+            text = obtain_content(url)
+            self._response._text = text
+        else:
+            status, html = self._requestPage(url)
+            text = self._htmlToText(html)
+            self._response._text = text
         return self._response
 
     def extractFromHTML(self, html):
