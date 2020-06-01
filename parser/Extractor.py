@@ -3,7 +3,6 @@ from bs4 import BeautifulSoup
 import justext
 from html2text import HTML2Text
 
-
 class Response:
     ''' Response defines the returned object for Extractor.
     It includes segmented parts of the extracted web document.
