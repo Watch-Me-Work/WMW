@@ -30,7 +30,7 @@ def get_keywords_by_ner(document):
         if any((ent.lower() in ent2.lower()) and (ent != ent2) for ent2 in all_ents):
             continue
 
-        if re.match(r'.*[^a-zA-Z0-9].*', ent):
+        if re.match(r'.*[^ a-zA-Z0-9].*', ent):
             continue
 
         # TODO: Consider pruning low-freq ents (which are more likely to be erroneous)
