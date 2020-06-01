@@ -2,7 +2,6 @@ from requests import Session
 from bs4 import BeautifulSoup
 import justext
 
-
 class Response:
     ''' Response defines the returned object for Extractor.
     It includes segmented parts of the extracted web document.
