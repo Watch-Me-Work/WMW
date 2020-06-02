@@ -1,6 +1,6 @@
 import itertools
 
-from .search import BingSearchEngine, DummySearchEngine, CorpusSearchEngine
+from . import search
 from .keyword_extraction import get_keywords_by_ner
 
 class RelatedDocumentFinder:
@@ -8,9 +8,9 @@ class RelatedDocumentFinder:
         raise NotImplementedError
 
 
-class BingRelatedDocumentFinder(RelatedDocumentFinder):
-    def __init__(self):
-        self._engine = BingSearchEngine()
+class NerRelatedDocumentFinder(RelatedDocumentFinder):
+    def __init__(self, search_engine):
+        self._engine = search_engine
 
     def search(self, document):
         fulldoc = document.get('body')
@@ -28,6 +28,7 @@ class BingRelatedDocumentFinder(RelatedDocumentFinder):
         results = itertools.chain(*[res[:1] for res in map(self._engine.search_by_string, querystrings)])
         return results
 
+
 class DummyRelatedDocumentFinder(RelatedDocumentFinder):
     """Dummy class for testing.  Always returns the same results."""
     def __init__(self):
@@ -36,9 +37,3 @@ class DummyRelatedDocumentFinder(RelatedDocumentFinder):
     def search(self, document):
         return self._engine.search_by_string("")
 
-class CorpusRelatedDocumentFinder(RelatedDocumentFinder):
-    def __init__(self):
-        self._engine = CorpusSearchEngine()
-
-    def search(self, document):
-        return self._engine.search_by_string(document.get('body'))

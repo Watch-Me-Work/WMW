@@ -3,7 +3,8 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import time
 
-from search import BingRelatedDocumentFinder, DummyRelatedDocumentFinder, CorpusRelatedDocumentFinder
+import search
+from search import NerRelatedDocumentFinder, DummyRelatedDocumentFinder
 from parser import Response, H2TExtractor, ContentExtractor
 
 HOSTNAME = 'localhost'
@@ -27,6 +28,7 @@ class WmwRequestHandler(BaseHTTPRequestHandler):
             {
                 'title': r.get_title(),
                 'url': r.get_url(),
+                'snippet': r.get_snippet(),
             }
             for r in result]}
 
@@ -50,9 +52,13 @@ class WmwServer(HTTPServer):
             raise ValueError("Unknown parser type")
 
         if self.cmdargs.finder_type == 'bing':
-            self.doc_finder = BingRelatedDocumentFinder()
+            self.doc_finder = NerRelatedDocumentFinder(search.BingSearchEngine())
+        elif self.cmdargs.finder_type == 'wiki':
+            self.doc_finder = NerRelatedDocumentFinder(search.WikipediaSearchEngine())
         elif self.cmdargs.finder_type == 'corpus':
-            self.doc_finder = CorpusRelatedDocumentFinder()
+            self.doc_finder = NerRelatedDocumentFinder(search.CorpusSearchEngine())
+        elif self.cmdargs.finder_type == 'dummy':
+            self.doc_finder = DummyRelatedDocumentFinder()
         else:
             raise ValueError("Unknown finder type")
 
@@ -60,7 +66,7 @@ class WmwServer(HTTPServer):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--parser_type', choices=['h2t', 'bs4', 'justext'], default='h2t')
-    parser.add_argument('--finder_type', choices=['bing', 'corpus'], default='corpus')
+    parser.add_argument('--finder_type', choices=['bing', 'corpus', 'wiki', 'dummy'], default='wiki')
     args = parser.parse_args()
 
     print(f"Starting server on host={HOSTNAME}, port={WMW_PORT}")
