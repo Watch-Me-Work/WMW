@@ -3,6 +3,10 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import time
 
+import logging
+logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s - %(funcName)s -   %(message)s', datefmt='%Y-%m-%d %H:%M:%S', level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 import search
 from search import NerRelatedDocumentFinder, DummyRelatedDocumentFinder
 from parser import Response, ContentExtractor
@@ -22,7 +26,9 @@ class WmwRequestHandler(BaseHTTPRequestHandler):
         request_params = json.loads(self.rfile.read(int(self.headers['content-length'])).decode('utf-8'))
         finder = self.server.doc_finder
         extractor = self.server.text_extractor
+        logger.info('Running parser pipeline for {}'.format(request_params['url']))
         doc_content = extractor.extractCleanText(html=request_params['document_html'], url=request_params['url'])
+        logger.info('Running search pipeline for {}'.format(request_params['url']))
         result = finder.search(doc_content)
         result = {'results': [
             {

@@ -1,7 +1,11 @@
+import logging
 import itertools
 
 from . import search
 from .keyword_extraction import get_keywords_by_ner
+
+logging.basicConfig()
+logger = logging.getLogger(__name__)
 
 class RelatedDocumentFinder:
     def search(self, document):
@@ -24,6 +28,7 @@ class NerRelatedDocumentFinder(RelatedDocumentFinder):
         querystrings = ents_sec1[:1]
         ents_fulldoc = get_keywords_by_ner(fulldoc)
         querystrings += ents_fulldoc[:3]
+        logger.info('Generated querystrings for document: {}. Searching...'.format(str(querystrings)))
         results = []
         results = itertools.chain(*[res[:1] for res in map(self._engine.search_by_string, querystrings)])
         return results
