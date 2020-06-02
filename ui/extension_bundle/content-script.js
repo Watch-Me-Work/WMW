@@ -21,7 +21,7 @@ iframe.src = chrome.extension.getURL("sidebar.html");
 iframe.id = "myIframe"
 iframe.onload = function () {
     var win = document.getElementById("myIframe").contentWindow;
-    win.postMessage(textToSend,"*");
+    win.postMessage({window_message: "summarizeTab", txt: textToSend}, "*");
 }
 
 document.body.appendChild(iframe);
