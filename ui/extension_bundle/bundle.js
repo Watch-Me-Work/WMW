@@ -30,10 +30,12 @@ const fetch = require("node-fetch");
 const api_url = 'http://localhost:3380/find_related';
 
 window.addEventListener("message", function(e){
+	console.log(e)
+	if (e.data.window_message !== "summarizeTab") { return }
 	// get url off active tab, call summarize
 	chrome.tabs.query({active: true, lastFocusedWindow: true}, tabs => {
     	textBody = {
-			"document_html": e.data,
+			"document_html": e.data.txt,
 			"url": tabs[0].url
 		};
 		summarize(textBody)
@@ -42,22 +44,27 @@ window.addEventListener("message", function(e){
 
 function summarize(textBody) {
 	console.log(textBody)
-	// todo: maybe pass the text into the function instead of having it as a global?
-	fetch(api_url, {
-		method: 'POST',
-		body: JSON.stringify(textBody),
-		headers:{
-		  'Content-Type': 'application/json'
-		} })
-	  .then(data => { 
-	  		data.json().then(jsonData => {
-	  			updateResultSidebar(jsonData['results'])
-	  		})	
-		  })
-	  .then(res => { 
-		  console.log(res)
-	   })
-	  .catch(error => console.error('Error:', error));
+	const htmlTagCheck = textBody.document_html.slice(0, 30);
+	if (!htmlTagCheck.includes('html')){
+		return;
+	} else {
+		// todo: maybe pass the text into the function instead of having it as a global?
+		fetch(api_url, {
+			method: 'POST',
+			body: JSON.stringify(textBody),
+			headers:{
+			  'Content-Type': 'application/json'
+			} })
+		  .then(data => { 
+		  		data.json().then(jsonData => {
+		  			updateResultSidebar(jsonData['results'])
+		  		})	
+			  })
+		  .then(res => { 
+			  console.log(res)
+		   })
+		  .catch(error => console.error('Error:', error));
+	}
 }
 
 // todo: move to sidebar.js
