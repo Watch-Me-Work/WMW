@@ -99,72 +99,100 @@ class ContentExtractor():
         self._response = Response()
 
     def _httpRequest(self, url):
-        sess = Session()
-        headers = {'User-Agent': 'Mozilla/5.0'}
-        res = sess.request(method="GET", url=url, headers=headers)
+        try:
+            sess = Session()
+            headers = {'User-Agent': 'Mozilla/5.0'}
+            res = sess.request(method="GET", url=url, headers=headers)
+            html = res.text
+            status_code = res.status_code
+            if status_code != 200:
+                self._response._status = False
+                self._response._error = "HTTPError: " + str(status_code)
+                return self._response
+        except requests.exceptions.Timeout:
+            self._response._status = False
+            self._response._error = "RequestError: Timeout."
+            return self._response
+        except requests.exceptions.TooManyRedirects:
+            self._response._status = False
+            self._response._error = "RequestError: TooManyRedirects."
+            return self._response
+        except requests.exceptions.RequestException as e:
+            self._response._status = False
+            self._response._error = "RequestError: RequestException."
+            return self._response
+        except:
+            self._response._status = False
+            self._response._error = "RequestError: Error."
+            return self._response
         
-        return res.text, res.status_code
+        return html, status_code
+
+    def _extract(self, html):
+        # extract title
+        title = ""
+        try:
+            soup = BeautifulSoup(html, "html.parser")
+            title = soup.title.string
+        except:
+            title = ""
+
+        # extract body and first paragraph
+        body = ""
+        first = ""
+        isFirst = False
+        ps = justext.justext(html, justext.get_stoplist("English"))
+            
+        for p in ps:
+            if not p.is_boilerplate:
+                body += p.text
+                if isFirst == False and len(p.text.split(" "))>5:
+                    first = p.text
+                    isFirst = True
+
+        return title, body, first
 
     def extractCleanText(self, html="", url=""):
+        # if both inputs are empty
         if not html and not url:
             self._response._status = False
             self._response._error = "InputError: HTML and URL are both empty."
             return self._response
 
+        # use url or html
+        use_url = False
+
+        # if html is empty, use url
         if not html:
+            html, status_code = self._httpRequest(url)
+            use_url = True
+
+        # extract title, body, first paragraph
+        try:
+            title, body, first = self._extract(html)
+        except:
+            self._response._status = False
+            self._response._error = "ExtractError: Extract failed."
+            return self._response
+        
+        # if using html did not get anything, use url
+        if not title and not body and not first and not use_url:
+            html, status_code = self._httpRequest(url)
+            use_url = True
             try:
-                html, status_code = self._httpRequest(url)
-                if status_code != 200:
-                    self._response._status = False
-                    self._response._error = "HTTPError: " + str(status_code)
-                    return self._response
-            except requests.exceptions.Timeout:
-                self._response._status = False
-                self._response._error = "RequestError: Timeout."
-                return self._response
-            except requests.exceptions.TooManyRedirects:
-                self._response._status = False
-                self._response._error = "RequestError: TooManyRedirects."
-                return self._response
-            except requests.exceptions.RequestException as e:
-                self._response._status = False
-                self._response._error = "RequestError: RequestException."
-                return self._response
+                title, body, first = self._extract(html)
             except:
                 self._response._status = False
-                self._response._error = "RequestError: Error."
+                self._response._error = "ExtractError: Extract failed."
                 return self._response
 
-        try:
-            soup = BeautifulSoup(html, "html.parser")
-        except:
-            self._response._status = False
-            self._response._error = "BS4Error: Parsing failed."
-            return self._response
-        if soup.title is not None:
-            self._response._title = soup.title.string
-
-        text = ""
-        first = False
-        try:
-            ps = justext.justext(html, justext.get_stoplist("English"))
-        except:
-            self._response._status = False
-            self._response._error = "JusTextError: Parsing failed."
-            return self._response
-
-        for p in ps:
-            if not p.is_boilerplate:
-                text += p.text
-                if first == False and len(p.text.split(" "))>5:
-                    self._response._first = p.text
-                    first = True
-        
-        self._response._body = text
+        self._response._title = title
+        self._response._body = body
+        self._response._first = first
         self._response._raw = html
 
         return self._response
-# TODO: if html fails, use url
+
 
 def main():
     # usage of example extractor
@@ -172,26 +200,21 @@ def main():
     url = "https://www.geeksforgeeks.org/tabulation-vs-memoization/"
 
     # test by passing only url
-    # res = parser.extractCleanText(url=url)
+    res = parser.extractCleanText(url=url)
 
     # test by passing html and url
-    html = """
-    <html><head><title>The Dormouse's story</title></head>
-    <body>
-    <p class="title"><b>The Dormouse's story</b></p>
-    <p class="story">Once upon a time there were three little sisters; and their names were
-    <a href="http://example.com/elsie" class="sister" id="link1">Elsie</a>,
-    <a href="http://example.com/lacie" class="sister" id="link2">Lacie</a> and
-    <a href="http://example.com/tillie" class="sister" id="link3">Tillie</a>;
-    and they lived at the bottom of a well.</p>
-    <p class="story">...</p>
-    """
-    res = parser.extractCleanText(html=html, url=url)
-
-    # sess = Session()
-    # headers = {'User-Agent': 'Mozilla/5.0'}
-    # res = sess.request(method="GET", url=url, headers=headers)
-    # html = res.text
+    # html = """
+    # <html><head><title>The Dormouse's story</title></head>
+    # <body>
+    # <p class="title"><b>The Dormouse's story</b></p>
+    # <p class="story">Once upon a time there were three little sisters; and their names were
+    # <a href="http://example.com/elsie" class="sister" id="link1">Elsie</a>,
+    # <a href="http://example.com/lacie" class="sister" id="link2">Lacie</a> and
+    # <a href="http://example.com/tillie" class="sister" id="link3">Tillie</a>;
+    # and they lived at the bottom of a well.</p>
+    # <p class="story">...</p>
+    # """
+    # res = parser.extractCleanText(html=html, url=url)
     
     # print results
     print(res.get("body"))
