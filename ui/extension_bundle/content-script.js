@@ -18,10 +18,10 @@ iframe.style.right = "0px";
 iframe.style.zIndex = "9000000000000000000";
 iframe.frameBorder = "none"; 
 iframe.src = chrome.extension.getURL("sidebar.html");
-iframe.id = "myIframe"
+iframe.id = "wmwIframe"
 iframe.onload = function () {
-    var win = document.getElementById("myIframe").contentWindow;
-    win.postMessage(textToSend,"*");
+    var win = document.getElementById("wmwIframe").contentWindow;
+    win.postMessage({window_message: "summarizeTab", txt: textToSend}, "*");
 }
 
 document.body.appendChild(iframe);

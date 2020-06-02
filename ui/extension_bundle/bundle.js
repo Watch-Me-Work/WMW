@@ -30,10 +30,12 @@ const fetch = require("node-fetch");
 const api_url = 'http://localhost:3380/find_related';
 
 window.addEventListener("message", function(e){
+	console.log(e)
+	if (e.data.window_message !== "summarizeTab") { return }
 	// get url off active tab, call summarize
 	chrome.tabs.query({active: true, lastFocusedWindow: true}, tabs => {
     	textBody = {
-			"document_html": e.data,
+			"document_html": e.data.txt,
 			"url": tabs[0].url
 		};
 		summarize(textBody)
