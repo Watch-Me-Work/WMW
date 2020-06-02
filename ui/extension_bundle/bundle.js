@@ -28,24 +28,29 @@ exports.Response = global.Response;
 
 const fetch = require("node-fetch");
 const api_url = 'http://localhost:3380/find_related';
-var textToSend = null
 
 window.addEventListener("message", function(e){
-	textToSend = {"document_html": e.data};
-	summarize()
+	// get url off active tab, call summarize
+	chrome.tabs.query({active: true, lastFocusedWindow: true}, tabs => {
+    	textBody = {
+			"document_html": e.data,
+			"url": tabs[0].url
+		};
+		summarize(textBody)
+	});
 }, false);
 
-function summarize() {
+function summarize(textBody) {
+	console.log(textBody)
 	// todo: maybe pass the text into the function instead of having it as a global?
 	fetch(api_url, {
 		method: 'POST',
-		body: JSON.stringify(textToSend),
+		body: JSON.stringify(textBody),
 		headers:{
 		  'Content-Type': 'application/json'
 		} })
 	  .then(data => { 
 	  		data.json().then(jsonData => {
-	  			console.log(jsonData)
 	  			updateResultSidebar(jsonData['results'])
 	  		})	
 		  })
@@ -58,7 +63,6 @@ function summarize() {
 // todo: move to sidebar.js
 function updateResultSidebar(resultsData) {
 	let resultsList = makeResultList(resultsData)
-	console.log(document.getElementById('resultsList'))
 	document.getElementById('resultsList').innerHTML = resultsList;
 	// document.getElementById('resultsList').text = resultsList;
 
@@ -70,7 +74,6 @@ function makeResultList(results) {
     let mainDiv = document.createElement('div');
 
     let divHtml = '';
-    console.log(results)
     for (let result of results) {
     	const pageLink = result.url
     	const pageTitle = result.title
@@ -96,7 +99,12 @@ function makeResultList(results) {
     return divHtml;
 }
 
-document.getElementById('searchButton').addEventListener('click', summarize);
+// todo: add search button again! figure out how functions will be passed in
+// maybe emit event as "message"
+// document.getElementById('searchButton').addEventListener('click', function() {
+// 		window.postMessage(window.documentElement.outerHTML)
+// 	    // chrome.tabs.sendMessage(tab.id, "message");
+// });
 
 
 },{"node-fetch":1}]},{},[2]);

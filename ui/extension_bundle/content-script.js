@@ -5,7 +5,7 @@ chrome.runtime.onMessage.addListener(function(msg, sender){
 })
 
 var sideBarOpen = false;
-var textToSend = document.body.innerHTML
+var textToSend = document.documentElement.outerHTML;
 
 //var iframe = document.createElement('iframe'); 
 var iframe = document.createElement('iframe'); 

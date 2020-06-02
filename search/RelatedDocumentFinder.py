@@ -1,7 +1,6 @@
-import multiprocessing
 import itertools
 
-from .search import BingSearchEngine, DummySearchEngine, CorpusSearchEngine
+from . import search
 from .keyword_extraction import get_keywords_by_ner
 
 class RelatedDocumentFinder:
@@ -9,9 +8,9 @@ class RelatedDocumentFinder:
         raise NotImplementedError
 
 
-class BingRelatedDocumentFinder(RelatedDocumentFinder):
-    def __init__(self):
-        self._engine = BingSearchEngine()
+class NerRelatedDocumentFinder(RelatedDocumentFinder):
+    def __init__(self, search_engine):
+        self._engine = search_engine
 
     def search(self, document):
         fulldoc = document.get('body')
@@ -26,9 +25,9 @@ class BingRelatedDocumentFinder(RelatedDocumentFinder):
         ents_fulldoc = get_keywords_by_ner(fulldoc)
         querystrings += ents_fulldoc[:3]
         results = []
-        with multiprocessing.Pool(1) as pool:
-            results = itertools.chain(*[res[:1] for res in pool.imap(self._engine.search_by_string, querystrings)])
+        results = itertools.chain(*[res[:1] for res in map(self._engine.search_by_string, querystrings)])
         return results
+
 
 class DummyRelatedDocumentFinder(RelatedDocumentFinder):
     """Dummy class for testing.  Always returns the same results."""
@@ -38,9 +37,3 @@ class DummyRelatedDocumentFinder(RelatedDocumentFinder):
     def search(self, document):
         return self._engine.search_by_string("")
 
-class CorpusRelatedDocumentFinder(RelatedDocumentFinder):
-    def __init__(self):
-        self._engine = CorpusSearchEngine()
-
-    def search(self, document):
-        return self._engine.search_by_string(document.get('body'))

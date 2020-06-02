@@ -1,17 +1,22 @@
 import os
 import requests
+import lxml.etree
 
 
 class FoundDocument:
-    def __init__(self, title, url=None):
+    def __init__(self, title, url=None, snippet=None):
         self.title = title
         self.url = url
+        self.snippet = snippet
 
     def get_title(self):
         return self.title
 
     def get_url(self):
         return self.url
+
+    def get_snippet(self):
+        return self.snippet
 
 
 class BingSearchEngine:
@@ -28,11 +33,36 @@ class BingSearchEngine:
             response.raise_for_status()
             found_documents = []
             for result in response.json()['webPages']['value']:
-                found_documents.append(FoundDocument(result['name'], url=result['url']))
+                found_documents.append(FoundDocument(result['name'], url=result['url'], snippet=result['snippet']))
             return found_documents
         except Exception as ex:
             raise ex
 
+class WikipediaSearchEngine:
+    def __init__(self):
+        self._endpoint = 'https://en.wikipedia.org/w/api.php'
+
+    def search_by_string(self, query_string):
+        params = {
+            'action': 'query',
+            'format': 'json',
+            'list': 'search',
+            'srsearch': query_string,
+            'maxlag': 3,
+        }
+        headers = { 'User-Agent': f'WatchMeWork/0.1 (m.m.darcy@u.northwestern.edu) Python requests/{requests.__version__}'}
+
+        try:
+            response = requests.get(self._endpoint, headers=headers, params=params)
+            response.raise_for_status()
+            found_documents = []
+            for result in response.json()['query']['search']:
+                url = f'https://en.wikipedia.org/?curid={result["pageid"]}'
+                snippet = ''.join(lxml.etree.fromstring('<span>' + result['snippet'] + '</span>').itertext())
+                found_documents.append(FoundDocument(result['title'], url=url, snippet=snippet))
+            return found_documents
+        except Exception as ex:
+            raise ex
 
 class DummySearchEngine:
     def __init__(self):
