@@ -98,7 +98,6 @@ function makeResultList(results) {
     	        <div class="list-group-item list-group-item-action" id="result-item">
                 <div class="d-flex w-100 justify-content-between">
                   <a href="${pageLink}" target="_blank"><h5 class="mb-1">${pageTitle}</h5></a>
-                  <small>Match Score?</small>
                 </div>
                 <p class="mb-1">${pageSnippet}</p>
               </div>
