@@ -1,27 +1,14 @@
 # Parser API
 #### `ContentExtractor`
 
-`extractFromURL(url)`
+`extractCleanText(html="", url="")`
 
-*Extracting clean text from given URL, return a response object*
-
-Args:
-
-- `url`: the target url to cleanup
-
-Return:
-
-* `Response` object
-
-
-
-`extractFromHTML(html)`
-
-*Extracting clean text from given html string, return a response object.*
+*Extracting clean text from given HTML and/or URL, return a response object*
 
 Args:
 
-* `html`: string representation of a HTML file to cleanup
+- `html`: the target html to cleanup, this will be considered first if provided
+- `url`: the target url to cleanup, if html is empty, or no html is provided, or html is corrupted, this url, if provided, will be used to extract clean text
 
 Return:
 
@@ -35,13 +22,19 @@ Return:
 
 `get(name)`
 
-*Getting parsed segments of the input document. Return string representations.*
+*Getting information from Response object by a provided name. Return specified information.*
 
 Args:
 
-* `name`: name of target segment, options including "title", "body", "raw"
+* `name`: name of target segment, options includes:
+    * `title`: document title
+    * `body`: main body
+    * `raw`: raw html string
+    * `first`: first paragraph
+    * `status`: parsing status, `True` if nothing goes wrong, `False` if something goes wrong
+    * `error`: error message of parser, if `status` flag is `True`
 
 Return:
 
-* Strings of specified part of the document.
+* Strings of specified information.
 

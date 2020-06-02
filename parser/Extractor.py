@@ -1,4 +1,5 @@
 from requests import Session
+from requests import exceptions
 from bs4 import BeautifulSoup
 import justext
 from html2text import HTML2Text
@@ -13,6 +14,8 @@ class Response:
         self._body = ""
         self._raw = ""
         self._first = ""
+        self._status = True
+        self._error = ""
 
     def get(self, name):
         ''' public interface, return the requested section of 
@@ -22,7 +25,9 @@ class Response:
             "title": self._title,
             "body": self._body,
             "raw": self._raw,
-            "first": self._first
+            "first": self._first,
+            "status": self._status,
+            "error": self._error
         }
         return switcher[name]
 
@@ -86,7 +91,6 @@ class H2TExtractor(Extractor):
         return self._response
 
 
-
 class ContentExtractor():
     ''' Implementation of Extractor interface
     '''
@@ -99,54 +103,107 @@ class ContentExtractor():
         headers = {'User-Agent': 'Mozilla/5.0'}
         res = sess.request(method="GET", url=url, headers=headers)
         
-        return res.text
+        return res.text, res.status_code
 
-    def extractFromURL(self, url):
-        html = self._httpRequest(url)
-        self.extractFromHTML(html)
+    def extractCleanText(self, html="", url=""):
+        if not html and not url:
+            self._response._status = False
+            self._response._error = "InputError: HTML and URL are both empty."
+            return self._response
 
-        return self._response
+        if not html:
+            try:
+                html, status_code = self._httpRequest(url)
+                if status_code != 200:
+                    self._response._status = False
+                    self._response._error = "HTTPError: " + str(status_code)
+                    return self._response
+            except requests.exceptions.Timeout:
+                self._response._status = False
+                self._response._error = "RequestError: Timeout."
+                return self._response
+            except requests.exceptions.TooManyRedirects:
+                self._response._status = False
+                self._response._error = "RequestError: TooManyRedirects."
+                return self._response
+            except requests.exceptions.RequestException as e:
+                self._response._status = False
+                self._response._error = "RequestError: RequestException."
+                return self._response
+            except:
+                self._response._status = False
+                self._response._error = "RequestError: Error."
+                return self._response
 
-    def extractFromHTML(self, html):
-        soup = BeautifulSoup(html, "html.parser")
+        try:
+            soup = BeautifulSoup(html, "html.parser")
+        except:
+            self._response._status = False
+            self._response._error = "BS4Error: Parsing failed."
+            return self._response
         if soup.title is not None:
             self._response._title = soup.title.string
 
         text = ""
         first = False
-        ps = justext.justext(html, justext.get_stoplist("English"))
+        try:
+            ps = justext.justext(html, justext.get_stoplist("English"))
+        except:
+            self._response._status = False
+            self._response._error = "JusTextError: Parsing failed."
+            return self._response
+
         for p in ps:
             if not p.is_boilerplate:
                 text += p.text
                 if first == False and len(p.text.split(" "))>5:
                     self._response._first = p.text
                     first = True
+        
         self._response._body = text
         self._response._raw = html
+
         return self._response
-    
-
-
-
-
+# TODO: if html fails, use url
 
 def main():
     # usage of example extractor
-    url = "https://www.foxnews.com/politics/grenell-declassifies-names-of-obama-officials-who-unmasked-flynn-report-says"
-    url = "https://github.com/dalab/web2text"
-    url = "https://medium.com/@laura.derohan/compiling-c-files-with-gcc-step-by-step-8e78318052"
+    parser = ContentExtractor()
     url = "https://www.geeksforgeeks.org/tabulation-vs-memoization/"
-    url = "https://www.cnn.com/2020/05/26/media/trump-joe-scarborough-conspiracy-theory/index.html"
+
+    # test by passing only url
+    # res = parser.extractCleanText(url=url)
+
+    # test by passing html and url
+    html = """
+    <html><head><title>The Dormouse's story</title></head>
+    <body>
+    <p class="title"><b>The Dormouse's story</b></p>
+    <p class="story">Once upon a time there were three little sisters; and their names were
+    <a href="http://example.com/elsie" class="sister" id="link1">Elsie</a>,
+    <a href="http://example.com/lacie" class="sister" id="link2">Lacie</a> and
+    <a href="http://example.com/tillie" class="sister" id="link3">Tillie</a>;
+    and they lived at the bottom of a well.</p>
+    <p class="story">...</p>
+    """
+    res = parser.extractCleanText(html=html, url=url)
 
     # sess = Session()
     # headers = {'User-Agent': 'Mozilla/5.0'}
     # res = sess.request(method="GET", url=url, headers=headers)
     # html = res.text
     
-    parser = ContentExtractor()
-    # response = parser.extractFromHTML(html)
-    response = parser.extractFromURL(url)
-    print(response.get("first"))
+    # print results
+    print(res.get("body"))
+    print("############################################")
+    print(res.get("title"))
+    print("############################################")
+    print(res.get("first"))
+    print("############################################")
+    print(res.get("status"))
+    print("############################################")
+    print(res.get("error"))
+    print("############################################")
 
 
 if __name__ == '__main__':
