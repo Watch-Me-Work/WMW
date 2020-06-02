@@ -5,7 +5,7 @@ import time
 
 import search
 from search import NerRelatedDocumentFinder, DummyRelatedDocumentFinder
-from parser import Response, H2TExtractor, ContentExtractor
+from parser import Response, ContentExtractor
 
 HOSTNAME = 'localhost'
 WMW_PORT = 3380
@@ -42,11 +42,7 @@ class WmwServer(HTTPServer):
         super().__init__(*args, **kwargs)
         self.cmdargs = cmdargs
 
-        if self.cmdargs.parser_type == 'h2t':
-            self.text_extractor = H2TExtractor()
-        elif self.cmdargs.parser_type == 'bs4':
-            self.text_extractor = BS4Extractor()
-        elif self.cmdargs.parser_type == 'justext':
+        if self.cmdargs.parser_type == 'justext':
             self.text_extractor = ContentExtractor()
         else:
             raise ValueError("Unknown parser type")
@@ -65,7 +61,7 @@ class WmwServer(HTTPServer):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--parser_type', choices=['h2t', 'bs4', 'justext'], default='h2t')
+    parser.add_argument('--parser_type', choices=['justext'], default='justext')
     parser.add_argument('--finder_type', choices=['bing', 'corpus', 'wiki', 'dummy'], default='wiki')
     args = parser.parse_args()
 
