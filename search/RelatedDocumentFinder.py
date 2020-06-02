@@ -1,4 +1,3 @@
-import multiprocessing
 import itertools
 
 from .search import BingSearchEngine, DummySearchEngine, CorpusSearchEngine
@@ -26,8 +25,7 @@ class BingRelatedDocumentFinder(RelatedDocumentFinder):
         ents_fulldoc = get_keywords_by_ner(fulldoc)
         querystrings += ents_fulldoc[:3]
         results = []
-        with multiprocessing.Pool(1) as pool:
-            results = itertools.chain(*[res[:1] for res in pool.imap(self._engine.search_by_string, querystrings)])
+        results = itertools.chain(*[res[:1] for res in map(self._engine.search_by_string, querystrings)])
         return results
 
 class DummyRelatedDocumentFinder(RelatedDocumentFinder):
