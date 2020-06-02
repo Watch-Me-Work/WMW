@@ -22,7 +22,7 @@ class WmwRequestHandler(BaseHTTPRequestHandler):
         request_params = json.loads(self.rfile.read(int(self.headers['content-length'])).decode('utf-8'))
         finder = self.server.doc_finder
         extractor = self.server.text_extractor
-        doc_content = extractor.extractFromHTML(request_params['document_html'])
+        doc_content = extractor.extractCleanText(html=request_params['document_html'], url=request_params['url'])
         result = finder.search(doc_content)
         result = {'results': [
             {
