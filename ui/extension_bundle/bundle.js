@@ -84,16 +84,23 @@ function makeResultList(results) {
     for (let result of results) {
     	const pageLink = result.url
     	const pageTitle = result.title
+        var pageSnippet = result.snippet;
+
+        if (pageSnippet === null) {
+            pageSnippet = '';
+        }
+
+        pageSnippet += '...';
 
     	// hacky but cbf to implement bootstrap elements manually
     	const newDivContent = `
+                
     	        <div class="list-group-item list-group-item-action" id="result-item">
                 <div class="d-flex w-100 justify-content-between">
-                  <h5 class="mb-1">${pageTitle}</h5>
+                  <a href="${pageLink}" target="_blank"><h5 class="mb-1">${pageTitle}</h5></a>
                   <small>Match Score?</small>
                 </div>
-                <p class="mb-1">A short description about the article/content of the page.</p>
-                <a href="${pageLink}" target="_blank"><button type="button" class="btn btn-info btn-lg btn-block">Go to ${pageTitle.slice(0, 30)}</button></a>
+                <p class="mb-1">${pageSnippet}</p>
               </div>
 
         `
