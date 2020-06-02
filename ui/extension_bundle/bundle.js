@@ -28,7 +28,7 @@ exports.Response = global.Response;
 
 const fetch = require("node-fetch");
 const api_url = 'http://localhost:3380/find_related';
-var textToSend = null
+let textToSend = null
 
 window.addEventListener("message", function(e){
 	textToSend = {"document_html": e.data};
