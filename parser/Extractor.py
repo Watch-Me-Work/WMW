@@ -3,6 +3,7 @@ from requests import exceptions
 from bs4 import BeautifulSoup
 import justext
 from html2text import HTML2Text
+from gdoc import obtain_content
 
 class Response:
     ''' Response defines the returned object for Extractor.
@@ -161,26 +162,25 @@ class ContentExtractor(Extractor):
             self._response._error = "InputError: HTML and URL are both empty."
             return self._response
 
-        # use url or html
-        use_url = False
-
-        # if html is empty, use url
-        if not html:
+        if "docs.google.com" in url:
             html, status_code = self._httpRequest(url)
-            use_url = True
+            body = obtain_content(url)
+            self._response._title = ""
+            self._response._body = body
+            self._response._first = body
+            self._response._raw = html
 
-        # extract title, body, first paragraph
-        try:
-            title, body, first = self._extract(html)
-        except:
-            self._response._status = False
-            self._response._error = "ExtractError: Extract failed."
-            return self._response
+        else:
+            
+            # use url or html
+            use_url = False
 
-        # if using html did not get anything, use url
-        if not title and not body and not first and not use_url:
-            html, status_code = self._httpRequest(url)
-            use_url = True
+            # if html is empty, use url
+            if not html:
+                html, status_code = self._httpRequest(url)
+                use_url = True
+
+            # extract title, body, first paragraph
             try:
                 title, body, first = self._extract(html)
             except:
@@ -188,10 +188,21 @@ class ContentExtractor(Extractor):
                 self._response._error = "ExtractError: Extract failed."
                 return self._response
 
-        self._response._title = title
-        self._response._body = body
-        self._response._first = first
-        self._response._raw = html
+            # if using html did not get anything, use url
+            if not title and not body and not first and not use_url:
+                html, status_code = self._httpRequest(url)
+                use_url = True
+                try:
+                    title, body, first = self._extract(html)
+                except:
+                    self._response._status = False
+                    self._response._error = "ExtractError: Extract failed."
+                    return self._response
+
+            self._response._title = title
+            self._response._body = body
+            self._response._first = first
+            self._response._raw = html
 
         return self._response
 
@@ -199,7 +210,7 @@ class ContentExtractor(Extractor):
 def main():
     # usage of example extractor
     parser = ContentExtractor()
-    url = "https://www.geeksforgeeks.org/tabulation-vs-memoization/"
+    url = "https://docs.google.com/document/d/1QeVDSu1ZNWHHB3qg6FLcodmwe51yWQKabASRc0iepSg/edit"
 
     # test by passing only url
     res = parser.extractCleanText(url=url)
