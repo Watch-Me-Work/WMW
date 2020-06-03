@@ -3,7 +3,6 @@ from requests import exceptions
 from bs4 import BeautifulSoup
 import justext
 from html2text import HTML2Text
-from gdoc import obtain_content
 
 class Response:
     ''' Response defines the returned object for Extractor.
