@@ -8,7 +8,7 @@ class Response:
     ''' Response defines the returned object for Extractor.
     It includes segmented parts of the extracted web document.
     '''
-    
+
     def __init__(self):
         self._title = ""
         self._body = ""
@@ -18,7 +18,7 @@ class Response:
         self._error = ""
 
     def get(self, name):
-        ''' public interface, return the requested section of 
+        ''' public interface, return the requested section of
         the response.
         '''
         switcher = {
@@ -33,16 +33,16 @@ class Response:
 
 
 class Extractor:
-    ''' Extractor Interface is used to extract clean text from web 
-    documents. It returns a Response object, which could be used by 
-    search module to further extract keywords and search against 
+    ''' Extractor Interface is used to extract clean text from web
+    documents. It returns a Response object, which could be used by
+    search module to further extract keywords and search against
     given corpus.
     Intented implementations:
     1. Supports both static and dynamic web documents.
     2. Produces text with minimal noise.
     3. Work well with a wide range of websites.
     '''
-    
+
     def __init__(self):
         ''' Initialize Response object
         '''
@@ -121,7 +121,7 @@ class ContentExtractor(Extractor):
             self._response._status = False
             self._response._error = "RequestError: Error."
             return self._response
-        
+
         return html, status_code
 
     def _extract(self, html):
@@ -138,13 +138,19 @@ class ContentExtractor(Extractor):
         first = ""
         isFirst = False
         ps = justext.justext(html, justext.get_stoplist("English"))
-            
+
+        end_punctuation = ['.','?','!']
         for p in ps:
             if not p.is_boilerplate:
                 body += p.text
-                if isFirst == False and len(p.text.split(" "))>5:
-                    first = p.text
-                    isFirst = True
+                if isFirst == False:
+                    p_count = 0
+                    for ep in end_punctuation:
+                        p_count += p.text.count(ep)
+                    if len(p.text.split(" "))>20 or p_count > 2:
+                        first = p.text
+                        isFirst = True
+
 
         return title, body, first
 
@@ -170,7 +176,7 @@ class ContentExtractor(Extractor):
             self._response._status = False
             self._response._error = "ExtractError: Extract failed."
             return self._response
-        
+
         # if using html did not get anything, use url
         if not title and not body and not first and not use_url:
             html, status_code = self._httpRequest(url)
@@ -211,7 +217,7 @@ def main():
     # <p class="story">...</p>
     # """
     # res = parser.extractCleanText(html=html, url=url)
-    
+
     # print results
     print(res.get("body"))
     print("############################################")
