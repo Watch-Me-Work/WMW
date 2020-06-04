@@ -27,10 +27,16 @@ class NerRelatedDocumentFinder(RelatedDocumentFinder):
         ents_sec1 = get_keywords_by_ner(firstsection)
         querystrings = ents_sec1[:1]
         ents_fulldoc = get_keywords_by_ner(fulldoc)
-        querystrings += ents_fulldoc[:3]
+        querystrings += [ent for ent in ents_fulldoc if ent not in querystrings][:3]
         logger.info('Generated querystrings for document: {}. Searching...'.format(str(querystrings)))
+
         results = []
-        results = itertools.chain(*[res[:1] for res in map(self._engine.search_by_string, querystrings)])
+        # Get results, filtering duplicates along the way
+        for res in map(self._engine.search_by_string, querystrings):
+            for resitem in res:
+                if not any(r.url == resitem.url for r in results):
+                    results.append(resitem)
+                    break
         return results
 
 
