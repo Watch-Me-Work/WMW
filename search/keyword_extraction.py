@@ -144,9 +144,10 @@ def LDAtraining(input_string):
     predicted_topics = []
     
     for s in matched_ids:
-        document_id = most_relevent_document_by_ids[s]
-        document_header = match_id_with_header[document_id]
-        predicted_topics.append(str(document_header)[2:-2])
+        if s in most_relevent_document_by_ids:
+            document_id = most_relevent_document_by_ids[s]
+            document_header = match_id_with_header[document_id]
+            predicted_topics.append(str(document_header)[2:-2])
    
     
     return predicted_topics
