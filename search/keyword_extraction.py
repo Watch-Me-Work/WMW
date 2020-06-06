@@ -2,7 +2,7 @@ import collections
 import re
 
 import spacy
-
+import numpy as np
 import gensim
 import os
 from gensim import corpora, models
@@ -97,9 +97,9 @@ def LDAtraining(input_string):
     '''
     input is a string of the document ,it is stored in a same directory with py file
     stopword is a txt file which is stored in a same directory with py file
-    Required LDA model files include dictionary.dictionary, lda.model, lda.model.expElogbeta.npy, lda.model.id2word, lda.model.state, lda.model.state.sstats.npy
+    Required LDA model files include dictionary.dictionary, lda.model, lda.model.expElogbeta.npy, lda.model.id2word, lda.model.state, lda.model.state.sstats.npy, match_id_with_header.npy,most_relevent_document_by_ids.npy 
     They are stored in the file named middata in a same directory with py file
-    Returns a list countained strings of topics sorted by topic relevance
+    Returns a list countained most relevent wikipedia article header of the topics ordered by relevance, like : ['Oil burner', 'Alum', 'Solvolysis', 'Cartography', 'Apical meristem']
     '''
     
     path = os.getcwd()
@@ -107,9 +107,11 @@ def LDAtraining(input_string):
     middatafolder = path + os.sep + 'middata' + os.sep
     dictionary_path = middatafolder + 'dictionary.dictionary'
     
-    # load LDA model and LDA dictionary
+    # load documents
     lda = models.ldamodel.LdaModel.load(middatafolder + 'lda.model')    
     dictionary = corpora.Dictionary.load(dictionary_path)
+    most_relevent_document_by_ids = np.load(middatafolder +'most_relevent_document_by_ids.npy',allow_pickle=True).item()
+    match_id_with_header = np.load(middatafolder +'match_id_with_header.npy',allow_pickle=True).tolist()
     # document text process and bow generation  
     inputlist = [[]]
     inputlist[0].append(input_string)
@@ -142,12 +144,9 @@ def LDAtraining(input_string):
     predicted_topics = []
     
     for s in matched_ids:
-        cur = matched_results[s]
-        strg = ''
-        for s in cur:
-            strg += s + ' '
-
-        predicted_topics.append(strg)
+        document_id = most_relevent_document_by_ids[s]
+        document_header = match_id_with_header[document_id]
+        predicted_topics.append(str(document_header)[2:-2])
    
     
     return predicted_topics
