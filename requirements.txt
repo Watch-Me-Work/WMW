@@ -1,7 +1,10 @@
+bs4
 gensim
-spacy
-https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.2.5/en_core_web_sm-2.2.5.tar.gz
+google-api-python-client
 html2text
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-2.2.5/en_core_web_sm-2.2.5.tar.gz
 justext
-oauth2client
 nltk
+oauth2client
+requests
+spacy

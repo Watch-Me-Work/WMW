@@ -3,7 +3,9 @@ Watch Me Work: A Chrome Extension for Real-time Automatic Searching
 
 ## Getting started
 
-First, make sure you are using Python 3.6 or higher and do `pip install -r requirements.txt` to install dependencies.  To start the server, run:
+First, make sure you are using Python 3.6 or higher and do `pip install -r requirements.txt` to install dependencies.  Then, download https://northwestern.box.com/shared/static/iu3hhk9msqng57ac93vlf7ns2acqi8h1.zip and extract it in the `search/` directory.  If done successfully, you should now have a `middata/` folder inside the `search/` directory.
+
+To start the server, run:
 ```
 python3 run_server.py
 ```
@@ -11,4 +13,4 @@ python3 run_server.py
 To install the Chrome extension, open Chrome and go to `chrome://extensions`.  Enable Developer Mode in the top right corner and then click 'Load extension' and browse to the `ui/extension_bundle` folder in this repository.
 
 ## Bing search engine
-To use Bing as the backend for search, start the server with the `--finder_type bing` option.  You will also need to export the `BING_KEY` environment variable with the Bing API key.  This key is listed in the WatchMeWork Slack.
+By default, the extension only searches Wikipedia articles.  To use Bing as the backend for search, start the server with the `--finder_type bing` option.  You will also need to export the `BING_KEY` environment variable with the Bing API key.  This key is listed in the WatchMeWork Slack.
