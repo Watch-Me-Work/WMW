@@ -8,7 +8,7 @@ logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s - %(funcName)
 logger = logging.getLogger(__name__)
 
 import search
-from search import NerRelatedDocumentFinder, DummyRelatedDocumentFinder
+from search import NerRelatedDocumentFinder, TopicRelatedDocumentFinder
 from parser import Response, ContentExtractor
 
 HOSTNAME = 'localhost'
@@ -24,19 +24,31 @@ class WmwRequestHandler(BaseHTTPRequestHandler):
             return
 
         request_params = json.loads(self.rfile.read(int(self.headers['content-length'])).decode('utf-8'))
-        finder = self.server.doc_finder
         extractor = self.server.text_extractor
         logger.info('Running parser pipeline for {}'.format(request_params['url']))
         doc_content = extractor.extractCleanText(html=request_params['document_html'], url=request_params['url'])
         logger.info('Running search pipeline for {}'.format(request_params['url']))
-        result = finder.search(doc_content)
-        result = {'results': [
+        result = self.server.topic_finder.search(doc_content, max_results=2)
+        results_list = [
             {
                 'title': r.get_title(),
                 'url': r.get_url(),
                 'snippet': r.get_snippet(),
+                'source': 'topic',
             }
-            for r in result]}
+            for r in result]
+
+        result = self.server.ner_finder.search(doc_content, max_results=3)
+        results_list.extend([
+            {
+                'title': r.get_title(),
+                'url': r.get_url(),
+                'snippet': r.get_snippet(),
+                'source': 'ner',
+            }
+            for r in result])
+
+        result = {'results': results_list}
 
         self.send_response(200)
         self.send_header("Content-type", "application/json")
@@ -53,22 +65,21 @@ class WmwServer(HTTPServer):
         else:
             raise ValueError("Unknown parser type")
 
+        engine = None
         if self.cmdargs.finder_type == 'bing':
-            self.doc_finder = NerRelatedDocumentFinder(search.BingSearchEngine())
+            engine = search.BingSearchEngine()
         elif self.cmdargs.finder_type == 'wiki':
-            self.doc_finder = NerRelatedDocumentFinder(search.WikipediaSearchEngine())
+            engine = search.WikipediaSearchEngine()
         elif self.cmdargs.finder_type == 'corpus':
-            self.doc_finder = NerRelatedDocumentFinder(search.CorpusSearchEngine())
-        elif self.cmdargs.finder_type == 'dummy':
-            self.doc_finder = DummyRelatedDocumentFinder()
-        else:
-            raise ValueError("Unknown finder type")
+            engine = search.CorpusSearchEngine()
+        self.ner_finder = NerRelatedDocumentFinder(engine)
+        self.topic_finder = TopicRelatedDocumentFinder(engine)
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--parser_type', choices=['justext'], default='justext')
-    parser.add_argument('--finder_type', choices=['bing', 'corpus', 'wiki', 'dummy'], default='wiki')
+    parser.add_argument('--finder_type', choices=['bing', 'corpus', 'wiki'], default='wiki')
     args = parser.parse_args()
 
     print(f"Starting server on host={HOSTNAME}, port={WMW_PORT}")

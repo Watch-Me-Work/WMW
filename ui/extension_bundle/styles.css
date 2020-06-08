@@ -3,6 +3,16 @@ body {
   background-color: #98C9A3;
 }
 
+.custom-switch {
+    display: inline-block;
+}
+
+#switches-container {
+    text-align: left;
+    padding-left: 0;
+    padding-top: 0.5em;
+}
+
 #main-container {
   width: 100%; 
   text-align: center;
@@ -11,8 +21,6 @@ body {
 }
 
 #results-container {
-	margin-top: 5%;
-	padding-top: 5%;
 	text-align: center;
 }
 
@@ -20,18 +28,22 @@ body {
   padding-bottom: 2%;
 }
 
+.custom-switch {
+    margin-left: 2%;
+}
+
 #close-button-row {
 	padding-bottom: 3%;
 }
 
-.rounded {
-    border-radius: 50px !important;
-    overflow: hidden !important;
-    outline: .35rem solid white;
-    padding-top: 4%;
-    padding-bottom: 2%;
-}
-
+/*.rounded {
+/*    border-radius: 50px !important;
+/*    overflow: hidden !important;
+/*    outline: .35rem solid white;
+/*    padding-top: 4%;
+/*    padding-bottom: 2%;
+/*}
+*/
 .results-list {
 	align-items: center;
 	display: flex;	

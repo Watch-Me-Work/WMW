@@ -29,6 +29,31 @@ exports.Response = global.Response;
 const fetch = require("node-fetch");
 const api_url = 'http://localhost:3380/find_related';
 
+var last_results = null;
+window.addEventListener('load', (e) => {
+    let topic_switch = document.getElementById('showTopicSwitch');
+    if ('topic_checked' in localStorage) {
+        topic_switch.checked = JSON.parse(localStorage['topic_checked']);
+    }
+    if (topic_switch !== null) {
+        topic_switch.addEventListener('change', (e) => {
+            localStorage['topic_checked'] = JSON.stringify(e.target.checked);
+            updateResultSidebar(last_results);
+        })
+    }
+
+    let ner_switch = document.getElementById('showNerSwitch');
+    if ('ner_checked' in localStorage) {
+        ner_switch.checked = JSON.parse(localStorage['ner_checked']);
+    }
+    if (ner_switch !== null) {
+        ner_switch.addEventListener('change', (e) => {
+            localStorage['ner_checked'] = JSON.stringify(e.target.checked);
+            updateResultSidebar(last_results);
+        })
+    }
+});
+
 window.addEventListener("message", function(e){
 	console.log(e)
 	if (e.data.window_message !== "summarizeTab") { return }
@@ -58,6 +83,7 @@ function summarize(textBody) {
 		  .then(data => { 
 		  		data.json().then(jsonData => {
 		  			updateResultSidebar(jsonData['results'])
+                    last_results = jsonData['results'];
 		  		})	
 			  })
 		  .then(res => { 
@@ -69,7 +95,10 @@ function summarize(textBody) {
 
 // todo: move to sidebar.js
 function updateResultSidebar(resultsData) {
-	let resultsList = makeResultList(resultsData)
+    if (resultsData === null) {
+        return;
+    }
+	let resultsList = makeResultList(resultsData);
 	document.getElementById('resultsList').innerHTML = resultsList;
 	// document.getElementById('resultsList').text = resultsList;
 
@@ -81,10 +110,34 @@ function makeResultList(results) {
     let mainDiv = document.createElement('div');
 
     let divHtml = '';
+    if (results.length === 0) {
+        divHtml = '<p>No results were found for this page</p>';
+    }
     for (let result of results) {
     	const pageLink = result.url
     	const pageTitle = result.title
-        var pageSnippet = result.snippet;
+        let pageSnippet = result.snippet;
+        let source_html = '';
+
+        if ('source' in result) {
+            let pretty_name = 'Unknown'
+            let checkbox = null;
+            if (result.source === 'topic') {
+                checkbox = document.getElementById('showTopicSwitch');
+                pretty_name = 'Topic';
+            } else if (result.source === 'ner') {
+                checkbox = document.getElementById('showNerSwitch');
+                pretty_name = 'Entity';
+            }
+
+            if (!(checkbox === null || checkbox.checked)) {
+                // Skip and don't display the result
+                continue;
+            }
+
+            
+            source_html = `<small>Recommended because: ${pretty_name}</small>`
+        }
 
         if (pageSnippet === null) {
             pageSnippet = '';
@@ -92,12 +145,14 @@ function makeResultList(results) {
 
         pageSnippet += '...';
 
+
     	// hacky but cbf to implement bootstrap elements manually
     	const newDivContent = `
                 
     	        <div class="list-group-item list-group-item-action" id="result-item">
                 <div class="d-flex w-100 justify-content-between">
-                  <a href="${pageLink}" target="_blank"><h5 class="mb-1">${pageTitle}</h5></a>
+                  <a href="${result.url}" target="_blank"><h5 class="mb-1">${result.title}</h5></a>
+                  ${source_html}
                 </div>
                 <p class="mb-1">${pageSnippet}</p>
               </div>
