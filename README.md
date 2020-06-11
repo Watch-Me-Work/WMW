@@ -5,7 +5,7 @@ Watch Me Work: A Chrome Extension for Real-time Automatic Searching
 
 To install the Chrome extension, open Chrome and go to `chrome://extensions`.  Enable Developer Mode in the top right corner and then click 'Load extension' and browse to the `ui/extension_bundle` folder in this repository.
 
-The server needs to be running in order for the browser extension to work.  There are two ways to set up the server application.  The first and simplest is to go to the [releases](https://github.com/Watch-Me-Work/WMW/releases) page and download the appropriate exectuable for your operating system.  Then you can just run that file.
+The server needs to be running in order for the browser extension to work.  There are two ways to set up the server application.  The first and simplest is to go to the [releases](https://github.com/Watch-Me-Work/WMW/releases) page and download the appropriate exectuable for your operating system.  Then you can just run that file.  Note that in order to run it, you may need to set the executable bit by doing `chmod +x <file>` where `<file>` is the filename of the executable you downloaded.
 
 ### Source code install
 The second way is to install from the source code.  This assumes you already have Python installed.  Make sure you are using Python 3.6 or higher and your current directory is set to the root of this repository.  Do `pip install -r requirements.txt` to install dependencies.  Then run `python init.py` to download and setup data (if you prefer manually doing this for some reason, see 'Manual download of data' below').
